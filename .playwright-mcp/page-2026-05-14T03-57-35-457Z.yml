@@ -1,0 +1,563 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - heading "🏗️ 开发强度潜力分析" [level=1] [ref=e4]
+    - generic [ref=e5]:
+      - button "潜力分析" [ref=e6] [cursor=pointer]
+      - button "用地图" [ref=e7] [cursor=pointer]
+    - textbox "搜索地块编码..." [ref=e9]
+    - generic [ref=e10]:
+      - generic [ref=e11] [cursor=pointer]:
+        - generic [ref=e12]: YD-A33-1
+        - generic [ref=e13]:
+          - generic [ref=e14]: FAR 1.23
+          - generic [ref=e15]: 59分
+      - generic [ref=e18] [cursor=pointer]:
+        - generic [ref=e19]: YD-A33-2
+        - generic [ref=e20]:
+          - generic [ref=e21]: FAR 0.9
+          - generic [ref=e22]: 46分
+      - generic [ref=e25] [cursor=pointer]:
+        - generic [ref=e26]: YD-A33-3
+        - generic [ref=e27]:
+          - generic [ref=e28]: FAR 0.77
+          - generic [ref=e29]: 41分
+      - generic [ref=e32] [cursor=pointer]:
+        - generic [ref=e33]: YD-A33-4
+        - generic [ref=e34]:
+          - generic [ref=e35]: FAR 0.19
+          - generic [ref=e36]: 15分
+      - generic [ref=e39] [cursor=pointer]:
+        - generic [ref=e40]: YD-A4-1
+        - generic [ref=e41]:
+          - generic [ref=e42]: FAR 0.23
+          - generic [ref=e43]: 17分
+      - generic [ref=e46] [cursor=pointer]:
+        - generic [ref=e47]: YD-A4-2
+        - generic [ref=e48]:
+          - generic [ref=e49]: FAR 0.55
+          - generic [ref=e50]: 32分
+      - generic [ref=e53] [cursor=pointer]:
+        - generic [ref=e54]: YD-A4-3
+        - generic [ref=e55]:
+          - generic [ref=e56]: FAR 0.51
+          - generic [ref=e57]: 30分
+      - generic [ref=e60] [cursor=pointer]:
+        - generic [ref=e61]: YD-A4-4
+        - generic [ref=e62]:
+          - generic [ref=e63]: FAR 0.43
+          - generic [ref=e64]: 27分
+      - generic [ref=e67] [cursor=pointer]:
+        - generic [ref=e68]: YD-A4-5
+        - generic [ref=e69]:
+          - generic [ref=e70]: FAR 0.44
+          - generic [ref=e71]: 28分
+      - generic [ref=e74] [cursor=pointer]:
+        - generic [ref=e75]: YD-A4-6
+        - generic [ref=e76]:
+          - generic [ref=e77]: FAR 0.6
+          - generic [ref=e78]: 35分
+      - generic [ref=e81] [cursor=pointer]:
+        - generic [ref=e82]: YD-A-1
+        - generic [ref=e83]:
+          - generic [ref=e84]: FAR 0.52
+          - generic [ref=e85]: 33分
+      - generic [ref=e88] [cursor=pointer]:
+        - generic [ref=e89]: YD-B1B2-1
+        - generic [ref=e90]:
+          - generic [ref=e91]: FAR 1.57
+          - generic [ref=e92]: 66分
+      - generic [ref=e95] [cursor=pointer]:
+        - generic [ref=e96]: YD-B1B2-2
+        - generic [ref=e97]:
+          - generic [ref=e98]: FAR 1.19
+          - generic [ref=e99]: 52分
+      - generic [ref=e102] [cursor=pointer]:
+        - generic [ref=e103]: YD-B1B2-3
+        - generic [ref=e104]:
+          - generic [ref=e105]: FAR 1.49
+          - generic [ref=e106]: 63分
+      - generic [ref=e109] [cursor=pointer]:
+        - generic [ref=e110]: YD-B1B2-4
+        - generic [ref=e111]:
+          - generic [ref=e112]: FAR 2.29
+          - generic [ref=e113]: 92分
+      - generic [ref=e116] [cursor=pointer]:
+        - generic [ref=e117]: YD-B1B2-5
+        - generic [ref=e118]:
+          - generic [ref=e119]: FAR 1.27
+          - generic [ref=e120]: 55分
+      - generic [ref=e123] [cursor=pointer]:
+        - generic [ref=e124]: YD-B1B2-6
+        - generic [ref=e125]:
+          - generic [ref=e126]: FAR 1.26
+          - generic [ref=e127]: 55分
+      - generic [ref=e130] [cursor=pointer]:
+        - generic [ref=e131]: YD-B1B2-7
+        - generic [ref=e132]:
+          - generic [ref=e133]: FAR 1.58
+          - generic [ref=e134]: 67分
+      - generic [ref=e137] [cursor=pointer]:
+        - generic [ref=e138]: YD-B1B2-8
+        - generic [ref=e139]:
+          - generic [ref=e140]: FAR 1.62
+          - generic [ref=e141]: 68分
+      - generic [ref=e144] [cursor=pointer]:
+        - generic [ref=e145]: YD-B1B2-9
+        - generic [ref=e146]:
+          - generic [ref=e147]: FAR 2.72
+          - generic [ref=e148]: 100分
+      - generic [ref=e151] [cursor=pointer]:
+        - generic [ref=e152]: YD-B1B2-10
+        - generic [ref=e153]:
+          - generic [ref=e154]: FAR 0.85
+          - generic [ref=e155]: 40分
+      - generic [ref=e158] [cursor=pointer]:
+        - generic [ref=e159]: YD-B41-1
+        - generic [ref=e160]:
+          - generic [ref=e161]: FAR 1.6
+          - generic [ref=e162]: 66分
+      - generic [ref=e165] [cursor=pointer]:
+        - generic [ref=e166]: YD-E1-1
+        - generic [ref=e167]:
+          - generic [ref=e168]: FAR 0.02
+          - generic [ref=e169]: 10分
+      - generic [ref=e172] [cursor=pointer]:
+        - generic [ref=e173]: YD-E1-2
+        - generic [ref=e174]:
+          - generic [ref=e175]: FAR 0.05
+          - generic [ref=e176]: 9分
+      - generic [ref=e179] [cursor=pointer]:
+        - generic [ref=e180]: YD-E1-3
+        - generic [ref=e181]:
+          - generic [ref=e182]: FAR 0.01
+          - generic [ref=e183]: 9分
+      - generic [ref=e186] [cursor=pointer]:
+        - generic [ref=e187]: YD-E1-4
+        - generic [ref=e188]:
+          - generic [ref=e189]: FAR 0.09
+          - generic [ref=e190]: 13分
+      - generic [ref=e193] [cursor=pointer]:
+        - generic [ref=e194]: YD-E1-5
+        - generic [ref=e195]:
+          - generic [ref=e196]: FAR 0.03
+          - generic [ref=e197]: 8分
+      - generic [ref=e200] [cursor=pointer]:
+        - generic [ref=e201]: YD-E1-6
+        - generic [ref=e202]:
+          - generic [ref=e203]: FAR 0.02
+          - generic [ref=e204]: 8分
+      - generic [ref=e207] [cursor=pointer]:
+        - generic [ref=e208]: YD-E1-7
+        - generic [ref=e209]:
+          - generic [ref=e210]: FAR 0.03
+          - generic [ref=e211]: 8分
+      - generic [ref=e214] [cursor=pointer]:
+        - generic [ref=e215]: YD-E1-8
+        - generic [ref=e216]:
+          - generic [ref=e217]: FAR 0.02
+          - generic [ref=e218]: 7分
+      - generic [ref=e221] [cursor=pointer]:
+        - generic [ref=e222]: YD-E1-9
+        - generic [ref=e223]:
+          - generic [ref=e224]: FAR 0.2
+          - generic [ref=e225]: 21分
+      - generic [ref=e228] [cursor=pointer]:
+        - generic [ref=e229]: YD-E1-10
+        - generic [ref=e230]:
+          - generic [ref=e231]: FAR 0.01
+          - generic [ref=e232]: 7分
+      - generic [ref=e235] [cursor=pointer]:
+        - generic [ref=e236]: YD-E1-11
+        - generic [ref=e237]:
+          - generic [ref=e238]: FAR 0.02
+          - generic [ref=e239]: 11分
+      - generic [ref=e242] [cursor=pointer]:
+        - generic [ref=e243]: YD-E2-1
+        - generic [ref=e244]:
+          - generic [ref=e245]: FAR 0.05
+          - generic [ref=e246]: 13分
+      - generic [ref=e249] [cursor=pointer]:
+        - generic [ref=e250]: YD-E2-2
+        - generic [ref=e251]:
+          - generic [ref=e252]: FAR 0.07
+          - generic [ref=e253]: 12分
+      - generic [ref=e256] [cursor=pointer]:
+        - generic [ref=e257]: YD-E2-3
+        - generic [ref=e258]:
+          - generic [ref=e259]: FAR 0.06
+          - generic [ref=e260]: 11分
+      - generic [ref=e263] [cursor=pointer]:
+        - generic [ref=e264]: YD-E2-4
+        - generic [ref=e265]:
+          - generic [ref=e266]: FAR 0.07
+          - generic [ref=e267]: 12分
+      - generic [ref=e270] [cursor=pointer]:
+        - generic [ref=e271]: YD-E2-5
+        - generic [ref=e272]:
+          - generic [ref=e273]: FAR 0.11
+          - generic [ref=e274]: 15分
+      - generic [ref=e277] [cursor=pointer]:
+        - generic [ref=e278]: YD-E2-6
+        - generic [ref=e279]:
+          - generic [ref=e280]: FAR 0.18
+          - generic [ref=e281]: 22分
+      - generic [ref=e284] [cursor=pointer]:
+        - generic [ref=e285]: YD-G1-1
+        - generic [ref=e286]:
+          - generic [ref=e287]: FAR 0.07
+          - generic [ref=e288]: 13分
+      - generic [ref=e291] [cursor=pointer]:
+        - generic [ref=e292]: YD-G1-2
+        - generic [ref=e293]:
+          - generic [ref=e294]: FAR 0.02
+          - generic [ref=e295]: 10分
+      - generic [ref=e298] [cursor=pointer]:
+        - generic [ref=e299]: YD-G1-3
+        - generic [ref=e300]:
+          - generic [ref=e301]: FAR 0.11
+          - generic [ref=e302]: 16分
+      - generic [ref=e305] [cursor=pointer]:
+        - generic [ref=e306]: YD-G1-4
+        - generic [ref=e307]:
+          - generic [ref=e308]: FAR 0.29
+          - generic [ref=e309]: 31分
+      - generic [ref=e312] [cursor=pointer]:
+        - generic [ref=e313]: YD-G1-5
+        - generic [ref=e314]:
+          - generic [ref=e315]: FAR -
+          - generic [ref=e316]: 6分
+      - generic [ref=e319] [cursor=pointer]:
+        - generic [ref=e320]: YD-G1-6
+        - generic [ref=e321]:
+          - generic [ref=e322]: FAR 0.03
+          - generic [ref=e323]: 9分
+      - generic [ref=e326] [cursor=pointer]:
+        - generic [ref=e327]: YD-G1-7
+        - generic [ref=e328]:
+          - generic [ref=e329]: FAR -
+          - generic [ref=e330]: 9分
+      - generic [ref=e333] [cursor=pointer]:
+        - generic [ref=e334]: YD-G1-8
+        - generic [ref=e335]:
+          - generic [ref=e336]: FAR 0.01
+          - generic [ref=e337]: 7分
+      - generic [ref=e340] [cursor=pointer]:
+        - generic [ref=e341]: YD-G1-9
+        - generic [ref=e342]:
+          - generic [ref=e343]: FAR 0.02
+          - generic [ref=e344]: 8分
+      - generic [ref=e347] [cursor=pointer]:
+        - generic [ref=e348]: YD-G1-10
+        - generic [ref=e349]:
+          - generic [ref=e350]: FAR 0.03
+          - generic [ref=e351]: 11分
+      - generic [ref=e354] [cursor=pointer]:
+        - generic [ref=e355]: YD-G1-11
+        - generic [ref=e356]:
+          - generic [ref=e357]: FAR 0.01
+          - generic [ref=e358]: 7分
+      - generic [ref=e361] [cursor=pointer]:
+        - generic [ref=e362]: YD-G1-12
+        - generic [ref=e363]:
+          - generic [ref=e364]: FAR 0.03
+          - generic [ref=e365]: 11分
+      - generic [ref=e368] [cursor=pointer]:
+        - generic [ref=e369]: YD-G1-13
+        - generic [ref=e370]:
+          - generic [ref=e371]: FAR 0.04
+          - generic [ref=e372]: 10分
+      - generic [ref=e375] [cursor=pointer]:
+        - generic [ref=e376]: YD-G1-14
+        - generic [ref=e377]:
+          - generic [ref=e378]: FAR 0.01
+          - generic [ref=e379]: 7分
+      - generic [ref=e382] [cursor=pointer]:
+        - generic [ref=e383]: YD-G1-15
+        - generic [ref=e384]:
+          - generic [ref=e385]: FAR 0.02
+          - generic [ref=e386]: 10分
+      - generic [ref=e389] [cursor=pointer]:
+        - generic [ref=e390]: YD-G1-16
+        - generic [ref=e391]:
+          - generic [ref=e392]: FAR 0.03
+          - generic [ref=e393]: 9分
+      - generic [ref=e396] [cursor=pointer]:
+        - generic [ref=e397]: YD-G1-17
+        - generic [ref=e398]:
+          - generic [ref=e399]: FAR 0.01
+          - generic [ref=e400]: 7分
+      - generic [ref=e403] [cursor=pointer]:
+        - generic [ref=e404]: YD-G1-18
+        - generic [ref=e405]:
+          - generic [ref=e406]: FAR 0.03
+          - generic [ref=e407]: 9分
+      - generic [ref=e410] [cursor=pointer]:
+        - generic [ref=e411]: YD-G1-19
+        - generic [ref=e412]:
+          - generic [ref=e413]: FAR 0.01
+          - generic [ref=e414]: 7分
+      - generic [ref=e417] [cursor=pointer]:
+        - generic [ref=e418]: YD-G1-20
+        - generic [ref=e419]:
+          - generic [ref=e420]: FAR 0.18
+          - generic [ref=e421]: 23分
+      - generic [ref=e424] [cursor=pointer]:
+        - generic [ref=e425]: YD-G1-21
+        - generic [ref=e426]:
+          - generic [ref=e427]: FAR 0.04
+          - generic [ref=e428]: 13分
+      - generic [ref=e431] [cursor=pointer]:
+        - generic [ref=e432]: YD-G1-22
+        - generic [ref=e433]:
+          - generic [ref=e434]: FAR 0.13
+          - generic [ref=e435]: 19分
+      - generic [ref=e438] [cursor=pointer]:
+        - generic [ref=e439]: YD-G1-23
+        - generic [ref=e440]:
+          - generic [ref=e441]: FAR 0.15
+          - generic [ref=e442]: 20分
+      - generic [ref=e445] [cursor=pointer]:
+        - generic [ref=e446]: YD-G1-24
+        - generic [ref=e447]:
+          - generic [ref=e448]: FAR 0.09
+          - generic [ref=e449]: 15分
+      - generic [ref=e452] [cursor=pointer]:
+        - generic [ref=e453]: YD-G1-25
+        - generic [ref=e454]:
+          - generic [ref=e455]: FAR 0.03
+          - generic [ref=e456]: 12分
+      - generic [ref=e459] [cursor=pointer]:
+        - generic [ref=e460]: YD-G1-26
+        - generic [ref=e461]:
+          - generic [ref=e462]: FAR 0.06
+          - generic [ref=e463]: 12分
+      - generic [ref=e466] [cursor=pointer]:
+        - generic [ref=e467]: YD-G1-27
+        - generic [ref=e468]:
+          - generic [ref=e469]: FAR 0.03
+          - generic [ref=e470]: 9分
+      - generic [ref=e473] [cursor=pointer]:
+        - generic [ref=e474]: YD-G2-1
+        - generic [ref=e475]:
+          - generic [ref=e476]: FAR 0.03
+          - generic [ref=e477]: 11分
+      - generic [ref=e480] [cursor=pointer]:
+        - generic [ref=e481]: YD-G2-2
+        - generic [ref=e482]:
+          - generic [ref=e483]: FAR 0.01
+          - generic [ref=e484]: 9分
+      - generic [ref=e487] [cursor=pointer]:
+        - generic [ref=e488]: YD-G2-3
+        - generic [ref=e489]:
+          - generic [ref=e490]: FAR -
+          - generic [ref=e491]: 6分
+      - generic [ref=e494] [cursor=pointer]:
+        - generic [ref=e495]: YD-G2-4
+        - generic [ref=e496]:
+          - generic [ref=e497]: FAR 0.01
+          - generic [ref=e498]: 7分
+      - generic [ref=e501] [cursor=pointer]:
+        - generic [ref=e502]: YD-G2-5
+        - generic [ref=e503]:
+          - generic [ref=e504]: FAR 0.01
+          - generic [ref=e505]: 7分
+      - generic [ref=e508] [cursor=pointer]:
+        - generic [ref=e509]: YD-G2-6
+        - generic [ref=e510]:
+          - generic [ref=e511]: FAR 0.01
+          - generic [ref=e512]: 9分
+      - generic [ref=e515] [cursor=pointer]:
+        - generic [ref=e516]: YD-G2-7
+        - generic [ref=e517]:
+          - generic [ref=e518]: FAR -
+          - generic [ref=e519]: 7分
+      - generic [ref=e522] [cursor=pointer]:
+        - generic [ref=e523]: YD-G2-8
+        - generic [ref=e524]:
+          - generic [ref=e525]: FAR 0.01
+          - generic [ref=e526]: 8分
+      - generic [ref=e529] [cursor=pointer]:
+        - generic [ref=e530]: YD-G2-9
+        - generic [ref=e531]:
+          - generic [ref=e532]: FAR 0.03
+          - generic [ref=e533]: 12分
+      - generic [ref=e536] [cursor=pointer]:
+        - generic [ref=e537]: YD-G2-10
+        - generic [ref=e538]:
+          - generic [ref=e539]: FAR -
+          - generic [ref=e540]: 6分
+      - generic [ref=e543] [cursor=pointer]:
+        - generic [ref=e544]: YD-G2-11
+        - generic [ref=e545]:
+          - generic [ref=e546]: FAR 0.02
+          - generic [ref=e547]: 8分
+      - generic [ref=e550] [cursor=pointer]:
+        - generic [ref=e551]: YD-G2-12
+        - generic [ref=e552]:
+          - generic [ref=e553]: FAR 0.03
+          - generic [ref=e554]: 10分
+      - generic [ref=e557] [cursor=pointer]:
+        - generic [ref=e558]: YD-G2-13
+        - generic [ref=e559]:
+          - generic [ref=e560]: FAR 0.06
+          - generic [ref=e561]: 14分
+      - generic [ref=e564] [cursor=pointer]:
+        - generic [ref=e565]: YD-G2-14
+        - generic [ref=e566]:
+          - generic [ref=e567]: FAR 0.01
+          - generic [ref=e568]: 8分
+      - generic [ref=e571] [cursor=pointer]:
+        - generic [ref=e572]: YD-G2-15
+        - generic [ref=e573]:
+          - generic [ref=e574]: FAR 0.01
+          - generic [ref=e575]: 8分
+      - generic [ref=e578] [cursor=pointer]:
+        - generic [ref=e579]: YD-G2-16
+        - generic [ref=e580]:
+          - generic [ref=e581]: FAR -
+          - generic [ref=e582]: 6分
+      - generic [ref=e585] [cursor=pointer]:
+        - generic [ref=e586]: YD-G2-17
+        - generic [ref=e587]:
+          - generic [ref=e588]: FAR -
+          - generic [ref=e589]: 6分
+      - generic [ref=e592] [cursor=pointer]:
+        - generic [ref=e593]: YD-G2-18
+        - generic [ref=e594]:
+          - generic [ref=e595]: FAR 0.03
+          - generic [ref=e596]: 10分
+      - generic [ref=e599] [cursor=pointer]:
+        - generic [ref=e600]: YD-G2-19
+        - generic [ref=e601]:
+          - generic [ref=e602]: FAR 0.1
+          - generic [ref=e603]: 20分
+      - generic [ref=e606] [cursor=pointer]:
+        - generic [ref=e607]: YD-G2-20
+        - generic [ref=e608]:
+          - generic [ref=e609]: FAR 0.04
+          - generic [ref=e610]: 13分
+      - generic [ref=e613] [cursor=pointer]:
+        - generic [ref=e614]: YD-G2-21
+        - generic [ref=e615]:
+          - generic [ref=e616]: FAR 0.03
+          - generic [ref=e617]: 10分
+      - generic [ref=e620] [cursor=pointer]:
+        - generic [ref=e621]: YD-G2-22
+        - generic [ref=e622]:
+          - generic [ref=e623]: FAR 0.01
+          - generic [ref=e624]: 7分
+      - generic [ref=e627] [cursor=pointer]:
+        - generic [ref=e628]: YD-R2B1-1
+        - generic [ref=e629]:
+          - generic [ref=e630]: FAR 1.38
+          - generic [ref=e631]: 61分
+      - generic [ref=e634] [cursor=pointer]:
+        - generic [ref=e635]: YD-R2B1-2
+        - generic [ref=e636]:
+          - generic [ref=e637]: FAR 1.37
+          - generic [ref=e638]: 60分
+      - generic [ref=e641] [cursor=pointer]:
+        - generic [ref=e642]: YD-R2B1-3
+        - generic [ref=e643]:
+          - generic [ref=e644]: FAR 1.48
+          - generic [ref=e645]: 65分
+      - generic [ref=e648] [cursor=pointer]:
+        - generic [ref=e649]: YD-R2B1-4
+        - generic [ref=e650]:
+          - generic [ref=e651]: FAR 1.37
+          - generic [ref=e652]: 60分
+      - generic [ref=e655] [cursor=pointer]:
+        - generic [ref=e656]: YD-R2B1-5
+        - generic [ref=e657]:
+          - generic [ref=e658]: FAR 1.28
+          - generic [ref=e659]: 57分
+      - generic [ref=e662] [cursor=pointer]:
+        - generic [ref=e663]: YD-R2-1
+        - generic [ref=e664]:
+          - generic [ref=e665]: FAR 0.78
+          - generic [ref=e666]: 39分
+      - generic [ref=e669] [cursor=pointer]:
+        - generic [ref=e670]: YD-R2-2
+        - generic [ref=e671]:
+          - generic [ref=e672]: FAR 1.26
+          - generic [ref=e673]: 58分
+      - generic [ref=e676] [cursor=pointer]:
+        - generic [ref=e677]: YD-R2-3
+        - generic [ref=e678]:
+          - generic [ref=e679]: FAR 1.1
+          - generic [ref=e680]: 52分
+      - generic [ref=e683] [cursor=pointer]:
+        - generic [ref=e684]: YD-R2-4
+        - generic [ref=e685]:
+          - generic [ref=e686]: FAR 1.56
+          - generic [ref=e687]: 69分
+      - generic [ref=e690] [cursor=pointer]:
+        - generic [ref=e691]: YD-R2-5
+        - generic [ref=e692]:
+          - generic [ref=e693]: FAR 1.26
+          - generic [ref=e694]: 58分
+      - generic [ref=e697] [cursor=pointer]:
+        - generic [ref=e698]: YD-R2-6
+        - generic [ref=e699]:
+          - generic [ref=e700]: FAR 1
+          - generic [ref=e701]: 48分
+      - generic [ref=e704] [cursor=pointer]:
+        - generic [ref=e705]: YD-R2-7
+        - generic [ref=e706]:
+          - generic [ref=e707]: FAR 1.54
+          - generic [ref=e708]: 69分
+      - generic [ref=e711] [cursor=pointer]:
+        - generic [ref=e712]: YD-R2-8
+        - generic [ref=e713]:
+          - generic [ref=e714]: FAR 1.15
+          - generic [ref=e715]: 54分
+      - generic [ref=e718] [cursor=pointer]:
+        - generic [ref=e719]: YD-R2-9
+        - generic [ref=e720]:
+          - generic [ref=e721]: FAR 1.27
+          - generic [ref=e722]: 58分
+      - generic [ref=e725] [cursor=pointer]:
+        - generic [ref=e726]: YD-R2-10
+        - generic [ref=e727]:
+          - generic [ref=e728]: FAR 1.2
+          - generic [ref=e729]: 56分
+      - generic [ref=e732] [cursor=pointer]:
+        - generic [ref=e733]: YD-R2-11
+        - generic [ref=e734]:
+          - generic [ref=e735]: FAR 1.33
+          - generic [ref=e736]: 61分
+      - generic [ref=e739] [cursor=pointer]:
+        - generic [ref=e740]: YD-R2-12
+        - generic [ref=e741]:
+          - generic [ref=e742]: FAR 1.09
+          - generic [ref=e743]: 51分
+      - generic [ref=e746] [cursor=pointer]:
+        - generic [ref=e747]: YD-S41-1
+        - generic [ref=e748]:
+          - generic [ref=e749]: FAR 0.2
+          - generic [ref=e750]: 26分
+      - generic [ref=e753] [cursor=pointer]:
+        - generic [ref=e754]: YD-S41-2
+        - generic [ref=e755]:
+          - generic [ref=e756]: FAR 0.13
+          - generic [ref=e757]: 20分
+      - generic [ref=e760] [cursor=pointer]:
+        - generic [ref=e761]: YD-U12-1
+        - generic [ref=e762]:
+          - generic [ref=e763]: FAR 0.27
+          - generic [ref=e764]: 25分
+      - generic [ref=e767] [cursor=pointer]:
+        - generic [ref=e768]: YD-U12-2
+        - generic [ref=e769]:
+          - generic [ref=e770]: FAR 0.29
+          - generic [ref=e771]: 27分
+  - generic [ref=e774]:
+    - generic [ref=e776]:
+      - heading "开发潜力评分" [level=4] [ref=e777]
+      - generic [ref=e779]:
+        - generic [ref=e780]: 低
+        - generic [ref=e781]: 中
+        - generic [ref=e782]: 高
+    - generic [ref=e783]:
+      - button "+" [ref=e784] [cursor=pointer]
+      - button "−" [ref=e785] [cursor=pointer]

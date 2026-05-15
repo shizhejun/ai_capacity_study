@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI + 城市规划 | 房地产动态知识图谱</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+            background: #fff;
+            color: #000;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .back-nav {
+            margin-bottom: 30px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            font-size: 14px;
+        }
+        .back-nav a {
+            color: #000;
+            text-decoration: none;
+        }
+        .back-nav a:hover {
+            text-decoration: underline;
+        }
+        .separator { color: #ccc; }
+        .section {
+            margin-bottom: 50px;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #000;
+        }
+        .step {
+            background: #fff;
+            border: 2px solid #000;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+        .step-num {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .step-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        .step-desc {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.8;
+        }
+        .step-tools {
+            margin-top: 15px;
+            font-size: 13px;
+            color: #666;
+        }
+        .step-tools span {
+            display: inline-block;
+            background: #f5f5f5;
+            padding: 4px 12px;
+            margin: 3px 3px 3px 0;
+        }
+        .enter-btn {
+            background: #000;
+            color: #fff;
+            border: none;
+            padding: 16px 40px;
+            font-size: 14px;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto;
+        }
+        .enter-btn:hover { background: #333; }
+        .note {
+            font-size: 13px;
+            color: #999;
+            margin-top: 40px;
+            text-align: center;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="back-nav">
+            <a href="../index.html">← 首页</a>
+            <a href="intro.html">知识图谱</a>
+            <a href="analysis.html">政策分析 →</a>
+        </div>
+
+        <h1>房地产动态知识图谱</h1>
+        <p class="subtitle">技术路线说明</p>
+
+        <div class="section">
+            <h2 class="section-title">数据采集</h2>
+            <div class="step">
+                <div class="step-num">步骤 01</div>
+                <div class="step-title">网络数据采集</div>
+                <div class="step-desc">
+                    通过网络搜索收集2026年全国各地房地产政策新闻，包括：
+                    国家统计局数据、广州市住建局政策文件、各大新闻媒体报道。
+                </div>
+                <div class="step-tools">
+                    <span>网络搜索</span>
+                    <span>新闻API</span>
+                    <span>公开数据集</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">信息抽取</h2>
+            <div class="step">
+                <div class="step-num">步骤 02</div>
+                <div class="step-title">三元组抽取</div>
+                <div class="step-desc">
+                    从文本中识别实体（Subject、Object）和关系（Predicate），构建知识三元组。
+                    例如："全国政策指导广州因城施策" → (全国政策, 指导, 广州)
+                </div>
+                <div class="step-tools">
+                    <span>NLP</span>
+                    <span>实体识别</span>
+                    <span>关系抽取</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">知识图谱构建</h2>
+            <div class="step">
+                <div class="step-num">步骤 03</div>
+                <div class="step-title">图谱可视化</div>
+                <div class="step-desc">
+                    将三元组转换为节点-边图结构，核心实体（全国政策、广州、一线城市）为中心节点，
+                    政策、措施、数据等为关联节点，形成层级关系网络。
+                </div>
+                <div class="step-tools">
+                    <span>Canvas</span>
+                    <span>D3.js</span>
+                    <span>节点布局算法</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">交互分析</h2>
+            <div class="step">
+                <div class="step-num">步骤 04</div>
+                <div class="step-title">点击查询</div>
+                <div class="step-desc">
+                    用户点击左侧三元组列表，高亮图谱中相关节点和关联边，
+                    实现知识图谱的探索与关联分析。
+                </div>
+                <div class="step-tools">
+                    <span>事件监听</span>
+                    <span>图谱高亮</span>
+                    <span>路径追踪</span>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="enter-btn" onclick="location.href='intro.html'">查看知识图谱 →</button>
+
+        <p class="note">本案例展示如何从公开新闻中抽取结构化知识<br>数据截至：2026年5月</p>
+    </div>
+</body>
+</html>

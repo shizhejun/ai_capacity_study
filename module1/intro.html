@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI + 城市规划 | 数据采集与分析</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Press Start 2P', cursive;
+            background: #fff;
+            color: #000;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 900px;
+            text-align: center;
+        }
+        h1 {
+            font-size: 33px;
+            line-height: 2;
+            margin-bottom: 50px;
+            letter-spacing: 2px;
+        }
+        .flow {
+            display: flex;
+            align-items: stretch;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 50px;
+        }
+        .step {
+            background: #fff;
+            color: #000;
+            border: 2px solid #000;
+            padding: 40px 30px;
+            width: 260px;
+        }
+        .step-num {
+            font-size: 9px;
+            color: #666;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+        .step-title {
+            font-size: 14px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        .step-desc {
+            font-size: 11px;
+            color: #333;
+            line-height: 2.2;
+            text-align: center;
+        }
+        .step-desc li {
+            list-style: none;
+            margin-bottom: 12px;
+        }
+        .arrow {
+            font-size: 28px;
+            color: #000;
+            display: flex;
+            align-items: center;
+        }
+        .enter-btn {
+            background: #000;
+            color: #fff;
+            border: none;
+            padding: 18px 40px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .enter-btn:hover {
+            background: #333;
+        }
+        .back-btn {
+            background: #fff;
+            color: #000;
+            border: 2px solid #000;
+            padding: 18px 40px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            cursor: pointer;
+            margin-right: 20px;
+            transition: all 0.2s;
+        }
+        .back-btn:hover {
+            background: #000;
+            color: #fff;
+        }
+        .note {
+            font-size: 7px;
+            color: #999;
+            margin-top: 40px;
+            line-height: 2.2;
+        }
+        .tech-line {
+            font-size: 9px;
+            color: #666;
+            margin-top: 20px;
+            text-align: center;
+        }
+        @media (max-width: 750px) {
+            .flow { flex-direction: column; align-items: center; }
+            .arrow { transform: rotate(90deg); }
+            .step { width: 100%; max-width: 300px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI 数据采集<br>案例分析</h1>
+
+        <div class="flow">
+            <div class="step">
+                <div class="step-num">步骤 01</div>
+                <div class="step-title">数据采集</div>
+                <ul class="step-desc">
+                    <li>网络搜索公开资料</li>
+                    <li>企业官网信息</li>
+                    <li>新闻报道收集</li>
+                </ul>
+            </div>
+
+            <div class="arrow">→</div>
+
+            <div class="step">
+                <div class="step-num">步骤 02</div>
+                <div class="step-title">整理分类</div>
+                <ul class="step-desc">
+                    <li>数据筛选</li>
+                    <li>分类整理</li>
+                    <li>核实校验</li>
+                </ul>
+            </div>
+
+            <div class="arrow">→</div>
+
+            <div class="step">
+                <div class="step-num">步骤 03</div>
+                <div class="step-title">网页呈现</div>
+                <ul class="step-desc">
+                    <li>数据可视化</li>
+                    <li>交互展示</li>
+                    <li>响应式设计</li>
+                </ul>
+            </div>
+        </div>
+
+        <button type="button" class="back-btn" onclick="location.href='../index.html'">← 返回首页</button>
+        <button type="button" class="enter-btn" onclick="location.href='index.html'">进入案例展示 →</button>
+
+        <p class="note">本案例展示如何通过网络采集公开数据<br>数据来源：公开网络资源</p>
+    </div>
+</body>
+</html>

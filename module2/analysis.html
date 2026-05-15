@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI + 城市规划 | 政策传导分析</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #fff;
+            color: #000;
+            min-height: 100vh;
+        }
+        .header {
+            padding: 16px 24px;
+            border-bottom: 2px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header-left {
+            display: flex;
+            align-items: baseline;
+            gap: 16px;
+        }
+        .header h1 {
+            font-size: 16px;
+            font-weight: 700;
+        }
+        .header .subtitle {
+            font-size: 12px;
+            color: #666;
+        }
+        .back-nav {
+            font-size: 12px;
+            display: flex;
+            gap: 16px;
+        }
+        .back-nav a {
+            color: #000;
+            text-decoration: none;
+        }
+        .back-nav a:hover {
+            text-decoration: underline;
+        }
+        .content {
+            padding: 32px 24px;
+            max-width: 1100px;
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        .section-title {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+        .section-title span {
+            display: inline-block;
+            background: #000;
+            color: #fff;
+            padding: 4px 10px;
+            margin-right: 8px;
+        }
+
+        /* 政策传导流程图 */
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            padding: 20px 0;
+            overflow-x: auto;
+        }
+        .flow-level {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            min-width: 180px;
+        }
+        .flow-box {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            padding: 12px 16px;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+        .flow-box.national {
+            background: #000;
+            color: #fff;
+            border-color: #000;
+        }
+        .flow-box.guangzhou {
+            background: #fff;
+            color: #000;
+            border: 2px solid #000;
+        }
+        .flow-box.local {
+            background: #f8f8f8;
+            color: #333;
+            border-color: #ccc;
+        }
+        .flow-arrow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 16px;
+            color: #888;
+            font-size: 11px;
+        }
+        .flow-arrow-line {
+            width: 40px;
+            height: 2px;
+            background: #ccc;
+            margin-bottom: 6px;
+        }
+        .flow-arrow-label {
+            font-size: 10px;
+            color: #666;
+            white-space: nowrap;
+        }
+
+        /* 互动模式分析 */
+        .pattern-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 16px;
+        }
+        .pattern-card {
+            border: 1px solid #ddd;
+            padding: 16px;
+        }
+        .pattern-card h4 {
+            font-size: 13px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        .pattern-card ul {
+            list-style: none;
+            font-size: 12px;
+            line-height: 1.8;
+        }
+        .pattern-card li::before {
+            content: "• ";
+            color: #888;
+        }
+
+        /* 建议表格 */
+        .recommendation-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            margin-top: 16px;
+        }
+        .recommendation-table th {
+            background: #000;
+            color: #fff;
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        .recommendation-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #eee;
+            vertical-align: top;
+            line-height: 1.6;
+        }
+        .recommendation-table tr:nth-child(even) td {
+            background: #fafafa;
+        }
+        .recommendation-table .level {
+            display: inline-block;
+            padding: 2px 8px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        .recommendation-table .level.high {
+            background: #000;
+            color: #fff;
+        }
+        .recommendation-table .level.medium {
+            background: #666;
+            color: #fff;
+        }
+
+        /* 结论 */
+        .conclusion {
+            background: #f5f5f5;
+            border-left: 4px solid #000;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .conclusion h4 {
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+        .conclusion p {
+            font-size: 12px;
+            line-height: 1.8;
+            color: #333;
+        }
+
+        /* 核心观点 */
+        .key-insights {
+            padding: 0 0 24px 0;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #000;
+        }
+        .key-insights h3 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            letter-spacing: 1px;
+        }
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .insight-item {
+            border-left: 3px solid #000;
+            padding-left: 12px;
+        }
+        .insight-num {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #000;
+        }
+        .insight-text {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        /* 导航链接 */
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            font-size: 12px;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+        .nav-links a {
+            color: #000;
+            text-decoration: none;
+        }
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <h1>政策传导机制分析</h1>
+            <span class="subtitle">国家与广州房地产政策互动关系研究</span>
+        </div>
+        <div class="back-nav">
+            <a href="intro.html">← 知识图谱</a>
+            <a href="case.html">案例演绎 →</a>
+        </div>
+    </div>
+
+    <div class="content">
+        <!-- 核心观点提炼 -->
+        <div class="key-insights">
+            <h3>核心观点</h3>
+            <div class="insights-grid">
+                <div class="insight-item">
+                    <div class="insight-num">01</div>
+                    <div class="insight-text">传导有效：四大全国政策方向（控增量、去库存、优供给、好房子）均已在广州得到实质性响应，形成清晰传导路径</div>
+                </div>
+                <div class="insight-item">
+                    <div class="insight-num">02</div>
+                    <div class="insight-text">地方创新：广州在完成传导任务同时，通过房票、公积金、卖旧买新等自主政策展现地方创新活力</div>
+                </div>
+                <div class="insight-item">
+                    <div class="insight-num">03</div>
+                    <div class="insight-text">精准传导：建议制定传导"对标清单"，明确每项全国政策的量化传导目标，避免政策空转</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 一、政策传导流程 -->
+        <div class="section">
+            <h2 class="section-title"><span>01</span>政策传导流程</h2>
+            <p style="font-size: 12px; color: #666; margin-bottom: 16px;">
+                2026年房地产政策以"控增量、去库存、优供给、好房子"四大方向为核心，国家层面定调，地方层面落实传导，形成"国家指令→地方响应→配套措施"的完整传导链。
+            </p>
+
+            <div class="flow-diagram">
+                <div class="flow-level">
+                    <div class="flow-box national">
+                        <strong>全国政策</strong><br>
+                        控增量 / 去库存 / 优供给 / 好房子
+                    </div>
+                </div>
+                <div class="flow-arrow">
+                    <div class="flow-arrow-line"></div>
+                    <div class="flow-arrow-label">传导</div>
+                </div>
+                <div class="flow-level">
+                    <div class="flow-box guangzhou">
+                        <strong>广州响应</strong><br>
+                        收购保障房 / 好房子28条<br>
+                        土地供应 / 好房子建设
+                    </div>
+                </div>
+                <div class="flow-arrow">
+                    <div class="flow-arrow-line"></div>
+                    <div class="flow-arrow-label">自行出台</div>
+                </div>
+                <div class="flow-level">
+                    <div class="flow-box local">
+                        <strong>广州配套</strong><br>
+                        房票政策 / 公积金100万<br>
+                        卖旧买新 / 抵押放宽
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 二、传导关系详解 -->
+        <div class="section">
+            <h2 class="section-title"><span>02</span>传导关系详解</h2>
+            <div class="pattern-grid">
+                <div class="pattern-card">
+                    <h4>传导关系（全国→广州）</h4>
+                    <ul>
+                        <li><strong>去库存 → 收购保障房</strong><br>国家鼓励收购存量商品房 → 广州收购3万套用作保障房</li>
+                        <li><strong>好房子 → 好房子28条</strong><br>国家推进好房子建设 → 广州发布28条具体措施</li>
+                        <li><strong>控增量 → 土地供应</strong><br>国家控增量 → 广州以需定供、减少58%商品住宅用地</li>
+                        <li><strong>优供给 → 好房子建设</strong><br>国家优供给 → 广州建立好房子标准体系</li>
+                    </ul>
+                </div>
+                <div class="pattern-card">
+                    <h4>自行出台关系（广州独立政策）</h4>
+                    <ul>
+                        <li><strong>房票政策</strong><br>城市更新安置工具，范围拓展至商办物业，跨区通用</li>
+                        <li><strong>公积金改革</strong><br>单人最高100万、两人200万，育儿家庭叠加，最高360万</li>
+                        <li><strong>卖旧买新补贴</strong><br>贷款总额1%补贴，单套最高3万，总补贴2亿元</li>
+                        <li><strong>抵押贷款放宽</strong><br>主城区房龄上限放松至30年，降低换房门槛</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 三、政策互动模式 -->
+        <div class="section">
+            <h2 class="section-title"><span>03</span>政策互动模式分析</h2>
+            <div class="pattern-grid">
+                <div class="pattern-card">
+                    <h4>传导型互动</h4>
+                    <ul>
+                        <li>国家定框架，地方填细节</li>
+                        <li>政策目标一致，手段因地制宜</li>
+                        <li>传导时效性：通常1-3个月内出台配套</li>
+                        <li>考核指标：可量化（如收购套数、用地减量）</li>
+                    </ul>
+                </div>
+                <div class="pattern-card">
+                    <h4>自主型互动</h4>
+                    <ul>
+                        <li>地方根据自身市场情况独立决策</li>
+                        <li>政策工具更灵活（如房票跨区通用）</li>
+                        <li>创新试验田功能（如公积金额度突破）</li>
+                        <li>风险：可能与国家方向不完全对齐</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 四、优化建议 -->
+        <div class="section">
+            <h2 class="section-title"><span>04</span>优化建议</h2>
+            <table class="recommendation-table">
+                <thead>
+                    <tr>
+                        <th style="width: 100px;">层面</th>
+                        <th style="width: 180px;">问题</th>
+                        <th>建议</th>
+                        <th style="width: 70px;">优先级</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>传导效率</strong></td>
+                        <td>传导链条较长，政策落地存在时滞</td>
+                        <td>建立"政策预通报"机制，国家政策制定时提前通知地方参与研讨，缩短传导周期</td>
+                        <td><span class="level high">高</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>传导精准</strong></td>
+                        <td>部分传导关系模糊，缺乏明确对应指标</td>
+                        <td>制定传导政策"对标清单"，明确每项全国政策的量化传导目标</td>
+                        <td><span class="level high">高</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>地方创新</strong></td>
+                        <td>自行出台政策与全国方向可能存在偏差</td>
+                        <td>建立"政策兼容性评估"机制，地方政策出台前评估与国家政策的协同度</td>
+                        <td><span class="level medium">中</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>数据反馈</strong></td>
+                        <td>政策效果反馈不及时，难以动态调整</td>
+                        <td>构建"政策效果实时监测系统"，用数据驱动政策迭代</td>
+                        <td><span class="level medium">中</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>跨城协调</strong></td>
+                        <td>一线城市间政策各自为战，缺乏协同</td>
+                        <td>建立一线城市房地产政策联席机制，在去库存等领域协同发力</td>
+                        <td><span class="level medium">中</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 五、结论 -->
+        <div class="section">
+            <h2 class="section-title"><span>05</span>结论</h2>
+            <div class="conclusion">
+                <h4>传导机制有效性评估</h4>
+                <p>
+                    当前国家与广州房地产政策传导机制总体有效：四大全国政策方向（控增量、去库存、优供给、好房子）均已在广州得到实质性响应，形成清晰的传导路径。广州在完成传导任务的同时，通过房票、公积金、卖旧买新等自主政策展现了地方创新活力。
+                </p>
+                <p style="margin-top: 12px;">
+                    <strong>核心建议：</strong>未来应重点加强"精准传导"——确保每项全国政策都有明确的量化指标和考核机制；同时保持地方创新空间，形成"国家定方向、地方填细节、数据验效果"的良性循环。
+                </p>
+            </div>
+        </div>
+
+        <div class="nav-links">
+            <a href="intro.html">← 知识图谱</a>
+            <a href="tech.html">技术路线 →</a>
+        </div>
+    </div>
+</body>
+</html>

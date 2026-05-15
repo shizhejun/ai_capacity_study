@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全球AI企业总部建筑图集</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f5f7;
+            --text-primary: #000000;
+            --text-secondary: #6e6e73;
+            --accent: #000000;
+            --border: #d2d2d7;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            z-index: 100;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+        }
+
+        .nav-inner {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 0 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 52px;
+        }
+
+        .nav-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            letter-spacing: -0.01em;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            flex-shrink: 1;
+        }
+        .nav-links::-webkit-scrollbar { display: none; }
+        .nav-links a { flex-shrink: 0; }
+
+        .nav-links a {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+            white-space: nowrap;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-links a.active {
+            color: var(--accent);
+        }
+
+        /* Main Content */
+        .main {
+            padding-top: 52px;
+        }
+
+        /* Page Sections */
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 0;
+        }
+
+        .hero-image {
+            width: 100%;
+            height: 80vh;
+            min-height: 600px;
+            max-height: 1000px;
+            object-fit: contain;
+            object-position: center;
+            display: block;
+            background: #f5f5f7;
+        }
+
+        .hero-fallback {
+            width: 100%;
+            height: 70vh;
+            min-height: 500px;
+            max-height: 800px;
+            background: linear-gradient(145deg, #f0f0f5 0%, #e8e8ed 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 17px;
+        }
+
+        .hero-content {
+            padding: 56px 22px 48px;
+            max-width: 680px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .hero-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 8px;
+        }
+
+        .hero-title {
+            font-size: 40px;
+            font-weight: 600;
+            letter-spacing: -0.015em;
+            margin-bottom: 12px;
+            line-height: 1.1;
+        }
+
+        .hero-meta {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Section Styling */
+        .section {
+            padding: 48px 22px;
+            max-width: 980px;
+            margin: 0 auto;
+            border-top: 1px solid var(--border);
+        }
+
+        .section:first-of-type {
+            border-top: none;
+        }
+
+        .section-title {
+            font-size: 21px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+        }
+
+        /* Data Grid */
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1px;
+            background: var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .data-item {
+            background: var(--bg-primary);
+            padding: 20px 24px;
+        }
+
+        .data-label {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 4px;
+        }
+
+        .data-value {
+            font-size: 15px;
+            color: var(--text-primary);
+            line-height: 1.4;
+        }
+
+        /* Features List */
+        .features {
+            list-style: none;
+        }
+
+        .features li {
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 15px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .features li:last-child {
+            border-bottom: none;
+        }
+
+        .features .check {
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        /* Photo Gallery */
+        .gallery {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .gallery-item {
+            border-radius: 12px;
+            overflow: hidden;
+            background: var(--bg-secondary);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            max-height: 600px;
+            object-fit: contain;
+            display: block;
+            background: var(--bg-secondary);
+        }
+
+        .gallery-caption {
+            padding: 12px 16px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .gallery-credit {
+            font-size: 11px;
+            color: var(--text-secondary);
+            opacity: 0.8;
+        }
+
+        /* Info Note */
+        .info-note {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 24px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 48px 22px;
+            text-align: center;
+            border-top: 1px solid var(--border);
+            margin-top: 48px;
+        }
+
+        .footer p {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Responsive */
+        @media (max-width: 734px) {
+            .nav-links {
+                gap: 16px;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+            }
+
+            .nav-links::-webkit-scrollbar {
+                display: none;
+            }
+
+            .hero-title {
+                font-size: 28px;
+            }
+
+            .hero-content {
+                padding: 40px 22px 32px;
+            }
+
+            .section {
+                padding: 32px 16px;
+            }
+
+            .section-title {
+                font-size: 18px;
+            }
+
+            .data-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Sources Section */
+        .sources {
+            margin-top: 48px;
+            padding-top: 32px;
+            border-top: 1px solid var(--border);
+        }
+
+        .sources-title {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 16px;
+        }
+
+        .sources-list {
+            list-style: none;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .sources-list li {
+            padding: 6px 0;
+            word-break: break-all;
+        }
+
+        .sources-list a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .sources-list a:hover {
+            text-decoration: underline;
+        }
+
+        /* Loading state */
+        .img-loading {
+            background: linear-gradient(145deg, #f0f0f5 0%, #e8e8ed 100%);
+            min-height: 300px;
+        }
+
+        /* Animated bars */
+        .bar-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+        .bar-label {
+            width: 90px;
+            font-size: 12px;
+            color: var(--text-primary);
+            text-align: right;
+            flex-shrink: 0;
+        }
+        .bar-track {
+            flex: 1;
+            height: 6px;
+            background: #e8e8ed;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .bar-fill {
+            height: 100%;
+            background: #000;
+            border-radius: 3px;
+            width: 0;
+            transition: width 1s ease-out;
+        }
+        .bar-value {
+            width: 70px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+        }
+        .bars-animated .bar-fill {
+            width: var(--bar-width) !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <div style="display:flex;align-items:center;flex-shrink:0;">
+                <a href="intro.html" style="color:var(--text-secondary);text-decoration:none;font-size:12px;margin-right:16px;">← 返回</a>
+                <span style="color:#ccc;margin-right:16px;">|</span>
+                <a href="../index.html" style="color:var(--text-secondary);text-decoration:none;font-size:12px;">← 首页</a>
+            </div>
+            <div style="flex:1;"></div>
+            <ul class="nav-links">
+            <ul class="nav-links">
+<li><a href="#" class="active" onclick="showPage('summary', this); return false;">总览</a></li>
+<li><a href="#" onclick="showPage('apple', this); return false;">Apple</a></li>
+                    <li><a href="#" onclick="showPage('microsoft', this); return false;">Microsoft</a></li>
+                    <li><a href="#" onclick="showPage('meta', this); return false;">Meta</a></li>
+                    <li><a href="#" onclick="showPage('nvidia', this); return false;">NVIDIA</a></li>
+                    <li><a href="#" onclick="showPage('openai', this); return false;">OpenAI</a></li>
+                    <li><a href="#" onclick="showPage('anthropic', this); return false;">Anthropic</a></li>
+                    <li><a href="#" onclick="showPage('tesla', this); return false;">Tesla</a></li>
+                    <li><a href="#" onclick="showPage('googledm', this); return false;">Google DM</a></li>
+                    <li><a href="#" onclick="showPage('tencent', this); return false;">腾讯</a></li>
+                    <li><a href="#" onclick="showPage('alibaba', this); return false;">阿里</a></li>
+                    <li><a href="#" onclick="showPage('baidu', this); return false;">百度</a></li>
+                    <li><a href="#" onclick="showPage('bytedance', this); return false;">字节</a></li>
+                    <li><a href="#" onclick="showPage('iflytek', this); return false;">讯飞</a></li>
+                    <li><a href="#" onclick="showPage('sensetime', this); return false;">商汤</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main">
+
+        <!-- Summary -->
+        <section id="summary" class="page active">
+            <div style="max-width:980px;margin:0 auto;padding:48px 22px;">
+                <h1 style="font-size:32px;font-weight:600;margin-bottom:12px;letter-spacing:-.01em;">全球标志性人工智能总部案例</h1>
+                <p style="font-size:16px;color:var(--text-secondary);margin-bottom:40px;">本图集收录全球14家主要AI企业总部,涵盖美国、中国、英国、香港地区,数据截至2026年4月。</p>
+
+                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:48px;">
+                    <div style="background:var(--bg-secondary);padding:20px;border-radius:12px;text-align:center;">
+                        <div style="font-size:28px;font-weight:600;color:var(--accent);">14</div>
+                        <div style="font-size:12px;color:var(--text-secondary);margin-top:4px;">AI企业总部</div>
+                    </div>
+                    <div style="background:var(--bg-secondary);padding:20px;border-radius:12px;text-align:center;">
+                        <div style="font-size:28px;font-weight:600;color:var(--accent);">3</div>
+                        <div style="font-size:12px;color:var(--text-secondary);margin-top:4px;">国家/地区</div>
+                    </div>
+                    <div style="background:var(--bg-secondary);padding:20px;border-radius:12px;text-align:center;">
+                        <div style="font-size:28px;font-weight:600;color:var(--accent);">2.8M+</div>
+                        <div style="font-size:12px;color:var(--text-secondary);margin-top:4px;">总面积(㎡)</div>
+                    </div>
+                    <div style="background:var(--bg-secondary);padding:20px;border-radius:12px;text-align:center;">
+                        <div style="font-size:28px;font-weight:600;color:var(--accent);">150K+</div>
+                        <div style="font-size:12px;color:var(--text-secondary);margin-top:4px;">员工容量</div>
+                    </div>
+                </div>
+
+                <h2 style="font-size:20px;font-weight:600;margin-bottom:16px;">建筑面积排名</h2>
+                <div class="bar-chart" style="margin-bottom:40px;">
+                    <div class="bar-row"><span class="bar-label">Microsoft</span><div class="bar-track"><div class="bar-fill" style="--bar-width:100%"></div></div><span class="bar-value">740,000+ ㎡</span></div>
+                    <div class="bar-row"><span class="bar-label">阿里达摩院</span><div class="bar-track"><div class="bar-fill" style="--bar-width:67%"></div></div><span class="bar-value">500,000 ㎡</span></div>
+                    <div class="bar-row"><span class="bar-label">科大讯飞</span><div class="bar-track"><div class="bar-fill" style="--bar-width:54%"></div></div><span class="bar-value">400,000 ㎡</span></div>
+                    <div class="bar-row"><span class="bar-label">腾讯</span><div class="bar-track"><div class="bar-fill" style="--bar-width:47%"></div></div><span class="bar-value">345,570 ㎡</span></div>
+                    <div class="bar-row"><span class="bar-label">Meta</span><div class="bar-track"><div class="bar-fill" style="--bar-width:59%"></div></div><span class="bar-value">433,555 ㎡</span></div>
+                    <div class="bar-row"><span class="bar-label">苹果</span><div class="bar-track"><div class="bar-fill" style="--bar-width:35%"></div></div><span class="bar-value">260,000 ㎡</span></div>
+                </div>
+
+                <h2 style="font-size:20px;font-weight:600;margin-bottom:16px;">核心选址规律</h2>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:40px;">
+                    <div style="background:var(--bg-secondary);padding:16px;border-radius:12px;">
+                        <div style="font-size:14px;font-weight:600;margin-bottom:8px;">人才集聚</div>
+                        <p style="font-size:12px;color:var(--text-secondary);line-height:1.6;">普遍选址于知名研究型大学附近,如斯坦福、华盛顿大学、清华北大等</p>
+                    </div>
+                    <div style="background:var(--bg-secondary);padding:16px;border-radius:12px;">
+                        <div style="font-size:14px;font-weight:600;margin-bottom:8px;">交通枢纽</div>
+                        <p style="font-size:12px;color:var(--text-secondary);line-height:1.6;">偏好国际机场、高铁站等交通枢纽区域,便于国际交流与合作</p>
+                    </div>
+                    <div style="background:var(--bg-secondary);padding:16px;border-radius:12px;">
+                        <div style="font-size:14px;font-weight:600;margin-bottom:8px;">绿色可持续</div>
+                        <p style="font-size:12px;color:var(--text-secondary);line-height:1.6;">90%以上获得LEED金级或白金认证,绿色设计降低运营成本并吸引人才</p>
+                    </div>
+                </div>
+
+                <h2 style="font-size:20px;font-weight:600;margin-bottom:16px;">功能区布局特点</h2>
+                <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:40px;">
+                    <div style="background:var(--bg-secondary);padding:16px;border-radius:12px;">
+                        <div style="font-size:14px;font-weight:600;margin-bottom:8px;">开放展示</div>
+                        <p style="font-size:14px;color:var(--text-secondary);line-height:1.6;">Apple Park的Steve Jobs剧场、科大讯飞的AI体验馆、腾讯的访客接待与展示空间,均设置公共展示功能,塑造企业形象</p>
+                    </div>
+                    <div style="background:var(--bg-secondary);padding:16px;border-radius:12px;">
+                        <div style="font-size:14px;font-weight:600;margin-bottom:8px;">员工福利设施</div>
+                        <p style="font-size:14px;color:var(--text-secondary);line-height:1.6;">健身房成为标配:Apple 9,290㎡健身中心、Google攀岩墙与跑道、腾讯睡眠舱与按摩室、字节跳动员工设施完善</p>
+                    </div>
+                    <div style="background:var(--bg-secondary);padding:16px;border-radius:12px;">
+                        <div style="font-size:14px;font-weight:600;margin-bottom:8px;">灵活办公</div>
+                        <p style="font-size:14px;color:var(--text-secondary);line-height:1.6;">阿里达摩院采用模块化办公(每层2,000-4,000㎡可灵活分割),Meta配置200+会议室,满足不同协作需求</p>
+                    </div>
+                    <div style="background:var(--bg-secondary);padding:16px;border-radius:12px;">
+                        <div style="font-size:14px;font-weight:600;margin-bottom:8px;">建筑连接</div>
+                        <p style="font-size:14px;color:var(--text-secondary);line-height:1.6;">百度新总部通过80米跨度钢桁架廊桥连接5栋研发楼,腾讯滨海大厦通过垂直交通系统整合多元功能</p>
+                    </div>
+                </div>
+
+                <p style="font-size:14px;color:var(--text-secondary);text-align:center;">点击上方导航选择公司,查看详细建筑信息</p>
+            </div>
+        </section>
+
+        <!-- Apple -->
+        <section id="apple" class="page">
+            <div class="hero">
+                <img src="images/apple_park.jpg" alt="Apple Park" class="hero-image" onerror="this.outerHTML='<div class=\'hero-fallback\'>Apple Park 照片</div>'">
+            </div>
+            <div class="hero-content">
+                <p class="hero-label">美国 · 库比蒂诺</p>
+                <h1 class="hero-title">Apple Park</h1>
+                <p class="hero-meta">Foster + Partners 设计 | 2017年竣工 | 12,000+ 员工</p>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">核心数据</h2>
+                <div class="data-grid">
+                    <div class="data-item">
+                        <p class="data-label">总面积</p>
+                        <p class="data-value">260,000+ ㎡ (2,800,000 sqft)</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">建筑形态</p>
+                        <p class="data-value">环形"太空船"，全球最大曲面玻璃</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">设计师</p>
+                        <p class="data-value">Norman Foster / Foster + Partners</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">绿色认证</p>
+                        <p class="data-value">LEED 白金认证 (北美最大)</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">主要功能</p>
+                        <p class="data-value">办公、研发、会议、健身、展示</p>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="section">
+                <h2 class="section-title">功能区细分</h2>
+                <ul class="features">
+                    <li><span class="check">✓</span> 环形主楼 (The Ring): 260,000 ㎡, 4层地上+3层地下</li>
+                    <li><span class="check">✓</span> 研发中心: 约28万 ㎡, 约2,200名研发人员</li>
+                    <li><span class="check">✓</span> 健身中心: 9,290 ㎡ (100,000 sqft) 员工专用</li>
+                    <li><span class="check">✓</span> Steve Jobs剧场: 地下, 1,000座位</li>
+                    <li><span class="check">✓</span> 访客中心: 1,870 ㎡, 含Apple Store、咖啡厅</li>
+                    <li><span class="check">✓</span> 中央庭院: 12公顷, 果园、池塘、2英里步道</li>
+                </ul>
+            </div>
+
+            <div class="section sources">
+                <h3 class="sources-title">数据来源</h3>
+                <ul class="sources-list">
+                    <li><a href="https://baike.baidu.com/item/Apple%20Park/20445075" target="_blank">Apple Park - 百度百科</a></li>
+                    <li><a href="https://finance.sina.com.cn/tech/roll/2023-04-10/doc-imypwefu4627409.shtml" target="_blank">苹果计划拆建Cupertino园区办公大楼 - 新浪科技</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Microsoft -->
+        <section id="microsoft" class="page">
+            <div class="hero">
+                <img src="images/Microsoft-East-Campus-Aerial-Photo.jpg" alt="Microsoft Campus" class="hero-image" onerror="this.outerHTML='<div class=\'hero-fallback\'>Microsoft Campus 照片</div>'">
+            </div>
+            <div class="hero-content">
+                <p class="hero-label">美国 · 雷德蒙德</p>
+                <h1 class="hero-title">Microsoft Redmond Campus</h1>
+                <p class="hero-meta">ZGF/NBBJ/LMN 设计 | 2017-2022年现代化 | 50,000+ 员工</p>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">核心数据</h2>
+                <div class="data-grid">
+                    <div class="data-item">
+                        <p class="data-label">总面积</p>
+                        <p class="data-value">740,000+ ㎡ (8,000,000+ sqft)</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">占地面积</p>
+                        <p class="data-value">502英亩 (203万平方米)</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">建筑数量</p>
+                        <p class="data-value">125栋 (现代化后新增17栋)</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">设计师</p>
+                        <p class="data-value">ZGF, NBBJ, LMN, WRNS Studio, ZGF Architects</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">绿色认证</p>
+                        <p class="data-value">LEED 金级认证</p>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="section">
+                <h2 class="section-title">功能区细分</h2>
+                <ul class="features">
+                    <li><span class="check">✓</span> 新建部分: 232,000 ㎡, 17栋新楼, 2.5M sqft</li>
+                    <li><span class="check">✓</span> 现代化改造: 622,000 ㎡, 现有建筑翻新</li>
+                    <li><span class="check">✓</span> The Commons: 13,930 ㎡, 餐厅、商店集群</li>
+                    <li><span class="check">✓</span> 中央广场: 8,100 ㎡, 2英亩, 可容纳12,000人</li>
+                    <li><span class="check">✓</span> 地热系统: 875口井, 220英里管道</li>
+                    <li><span class="check">✓</span> 停车设施: 6,500位, 4层地下停车场</li>
+                </ul>
+            </div>
+
+            <div class="section sources">
+                <h3 class="sources-title">数据来源</h3>
+                <ul class="sources-list">
+                    <li><a href="https://news.microsoft.com/2007/11/12/microsoft-continues-its-redmond-headquarters-expansion-on-a-grand-scale/" target="_blank">Microsoft Continues Its Redmond Headquarters Expansion - Microsoft News</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Meta -->
+        <section id="meta" class="page">
+            <div class="hero">
+                <img src="images/mpk20.jpg" alt="Meta MPK Campus" class="hero-image" onerror="this.outerHTML='<div class=\'hero-fallback\'>Meta HQ 照片</div>'">
+            </div>
+            <div class="hero-content">
+                <p class="hero-label">美国 · 门洛帕克</p>
+                <h1 class="hero-title">Meta MPK Campus</h1>
+                <p class="hero-meta">Frank Gehry 设计 | 2015-2022年 | 2,800+ 员工</p>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">核心数据</h2>
+                <div class="data-grid">
+                    <div class="data-item">
+                        <p class="data-label">总面积</p>
+                        <p class="data-value">约140万 sqft (MPK 20+21+22)</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">建筑</p>
+                        <p class="data-value">MPK 20 (433,555 sqft) + MPK 21 (524,000 sqft) + MPK 22 (457,000 sqft)</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">建筑师</p>
+                        <p class="data-value">Frank Gehry (Gehry Partners)</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">屋顶花园</p>
+                        <p class="data-value">MPK 20: 9英亩 | MPK 21: 22.7英亩</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">绿色认证</p>
+                        <p class="data-value">LEED 金级认证</p>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="section">
+                <h2 class="section-title">功能区细分</h2>
+                <ul class="features">
+                    <li><span class="check">✓</span> MPK 20: 40,270 ㎡, 433,555 sqft, 2层, 2,800员工</li>
+                    <li><span class="check">✓</span> MPK 21: 48,700 ㎡, 524,000 sqft, 3.6英亩屋顶花园</li>
+                    <li><span class="check">✓</span> MPK 22: 42,500 ㎡, 457,000 sqft, 最新扩建</li>
+                    <li><span class="check">✓</span> 屋顶花园 (MPK 20): 3.6公顷, 350+棵树, 半英里步道</li>
+                    <li><span class="check">✓</span> 屋顶花园 (MPK 21): 9公顷, 200+棵树</li>
+                    <li><span class="check">✓</span> 活动空间: 1,858 ㎡, 2,000座会议空间</li>
+                </ul>
+            </div>
+
+            <div class="section sources">
+                <h3 class="sources-title">数据来源</h3>
+                <ul class="sources-list">
+                    <li><a href="https://zhuanlan.zhihu.com/p/54301725" target="_blank">Facebook的工作空间演变历史 - 知乎</a></li>
+                    <li><a href="https://www.sohu.com/a/252085092_536405" target="_blank">Facebook在门罗帕克新建办公楼 - 搜狐</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- NVIDIA -->
+        <section id="nvidia" class="page">
+            <div class="hero">
+                <img src="images/NVIDIA.png" alt="NVIDIA HQ" class="hero-image" onerror="this.outerHTML='<div class=\'hero-fallback\'>NVIDIA HQ 照片</div>'">
+            </div>
+            <div class="hero-content">
+                <p class="hero-label">美国 · 圣克拉拉</p>
+                <h1 class="hero-title">NVIDIA Headquarters</h1>
+                <p class="hero-meta">Gensler 设计 | 2017/2022年 | ~6,000 员工 (Endeavor 2,500 + Voyager ~3,500)</p>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">核心数据</h2>
+                <div class="data-grid">
+                    <div class="data-item">
+                        <p class="data-label">总面积</p>
+                        <p class="data-value">116,000+ ㎡ (1,250,000 sqft)</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">建筑</p>
+                        <p class="data-value">Endeavor (500,000 sqft) + Voyager (750,000 sqft)</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">建筑形态</p>
+                        <p class="data-value">三角形平面，象征GPU芯片结构</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">天窗数量</p>
+                        <p class="data-value">245个三角形天窗</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">绿色认证</p>
+                        <p class="data-value">LEED 金级认证</p>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="section">
+                <h2 class="section-title">功能区细分</h2>
+                <ul class="features">
+                    <li><span class="check">✓</span> Endeavor: 46,450 ㎡, 500,000 sqft, 可容纳2,500人</li>
+                    <li><span class="check">✓</span> Voyager: 69,700 ㎡, 750,000 sqft, 可容纳3,000+人</li>
+                    <li><span class="check">✓</span> 执行简报中心: 2,790 ㎡, 30,000 sqft, Endeavor内</li>
+                    <li><span class="check">✓</span> 员工餐厅: 800座</li>
+                    <li><span class="check">✓</span> 会议室: 200+间, 两栋楼内</li>
+                    <li><span class="check">✓</span> 屋顶连接花园: 约1.6公顷, 4英亩, 太阳能天棚</li>
+                </ul>
+            </div>
+
+            <div class="section sources">
+                <h3 class="sources-title">数据来源</h3>
+                <ul class="sources-list">
+                    <li><a href="https://baike.baidu.com/item/NVIDIA/325313" target="_blank">NVIDIA - 百度百科</a></li>
+                    <li><a href="https://fortune.com/2023/10/14/nvidia-skips-return-to-office-sticks-to-remote-work-among-hottest-tech-companies/" target="_blank">Nvidia Remote Work Policy - Fortune</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- OpenAI -->
+        <section id="openai" class="page">
+            <div class="hero">
+                <img src="images/openai.png" alt="OpenAI HQ" class="hero-image" onerror="this.outerHTML='<div class=\'hero-fallback\'>OpenAI HQ 照片</div>'">
+            </div>
+            <div class="hero-content">
+                <p class="hero-label">美国 · 旧金山</p>
+                <h1 class="hero-title">OpenAI Headquarters</h1>
+                <p class="hero-meta">租用办公室 | 2015年成立 | ~2,000+ 员工 (2024年数据)</p>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">核心数据</h2>
+                <div class="data-grid">
+                    <div class="data-item">
+                        <p class="data-label">总面积</p>
+                        <p class="data-value">~92,903 ㎡ (~1,000,000 sqft)</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">主要建筑</p>
+                        <p class="data-value">Mission Bay 3处物业 (租用)</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">办公地点</p>
+                        <p class="data-value">550 Terry A Francois Blvd, 1455-1515 Third St</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">功能定位</p>
+                        <p class="data-value">AI研究、实验室、办公</p>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="section">
+                <h2 class="section-title">功能区细分</h2>
+                <ul class="features">
+                    <li><span class="check">✓</span> 550 Terry A Francois Blvd: 315,000 sqft (6层, 原Old Navy总部)</li>
+                    <li><span class="check">✓</span> 1455-1515 Third St: ~500,000 sqft (2023年10月从Uber转租)</li>
+                    <li><span class="check">✓</span> Mission Bay总办公面积: ~100万 sqft</li>
+                    <li><span class="check">✓</span> 其他: 东京、伦敦、都柏林、新加坡有分部</li>
+                    <li><span class="check">✓</span> 2024年9月: 员工超1,000人 (同比翻倍)</li>
+                </ul>
+            </div>
+
+            <div class="section sources">
+                <h3 class="sources-title">数据来源</h3>
+                <ul class="sources-list">
+                    <li><a href="https://www.costar.com/article/2129899755/openai-ramps-up-san-francisco-expansion-with-latest-full-building-lease" target="_blank">OpenAI ramps up San Francisco expansion - CoStar</a></li>
+                    <li><a href="https://so.html5.qq.com/page/real/search_news?docid=70000021_63769b359c092552" target="_blank">OpenAI再扩张旧金山办公室 - 腾讯新闻</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Anthropic -->
+        <section id="anthropic" class="page">
+            <div class="hero">
+                <img src="images/anthropic.jpg" alt="Anthropic HQ" class="hero-image" onerror="this.outerHTML='<div class=\'hero-fallback\'>Anthropic 照片</div>'">
+            </div>
+            <div class="hero-content">
+                <p class="hero-label">美国 · 旧金山</p>
+                <h1 class="hero-title">Anthropic</h1>
+                <p class="hero-meta">Various 设计 | 2023年至今 | ~2,500 员工 (全球, 2026)</p>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">核心数据</h2>
+                <div class="data-grid">
+                    <div class="data-item">
+                        <p class="data-label">总面积</p>
+                        <p class="data-value">230,000+ ㎡ (2,500,000+ sqft)</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">总部位置</p>
+                        <p class="data-value">500 Howard St (Foundry Square IV)</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">扩张租赁</p>
+                        <p class="data-value">300 Howard St (整栋480,000 sqft)</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">建筑类型</p>
+                        <p class="data-value">现代办公塔楼</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">功能定位</p>
+                        <p class="data-value">AI安全研究、办公</p>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="section">
+                <h2 class="section-title">功能区细分</h2>
+                <div class="info-note">
+                    Anthropic 为整栋或整层租赁办公空间，未公开其功能区面积细分数据。公司办公空间分布在旧金山市中心多个办公楼内，具体功能区划分属于内部信息。
+                </div>
+            </div>
+
+            <div class="section sources">
+                <h3 class="sources-title">数据来源</h3>
+                <ul class="sources-list">
+                    <li><a href="https://so.html5.qq.com/page/real/search_news?docid=70000021_016690dcec184852" target="_blank">Anthropic加码欧洲版图 新设巴黎与慕尼黑办公室 - 腾讯新闻</a></li>
+                    <li><a href="https://new.qq.com/rain/a/20251113A01R3P00" target="_blank">Anthropic宣布斥资500亿美元自建AI数据中心 - 腾讯新闻</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Tesla -->
+        <section id="tesla" class="page">
+            <div class="hero">
+                <img src="images/tesla.jpg" alt="Tesla HQ" class="hero-image" onerror="this.outerHTML='<div class=\'hero-fallback\'>Tesla 照片</div>'">
+            </div>
+            <div class="hero-content">
+                <p class="hero-label">美国 · 奥斯汀</p>
+                <h1 class="hero-title">Tesla AI Engineering HQ</h1>
+                <p class="hero-meta">HP旧址改造 | 2023年 | ~1,000 员工</p>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">核心数据</h2>
+                <div class="data-grid">
+                    <div class="data-item">
+                        <p class="data-label">总面积</p>
+                        <p class="data-value">29,000-97,000 ㎡ (约320,000-1,000,000 sqft)</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">地址</p>
+                        <p class="data-value">3000 Hanover St, 斯坦福研究公园</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">前身</p>
+                        <p class="data-value">Hewlett Packard Enterprise 总部</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">定位</p>
+                        <p class="data-value">全球工程与AI总部</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">功能</p>
+                        <p class="data-value">Autopilot、芯片研发、机器人设计</p>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="section">
+                <h2 class="section-title">功能区细分</h2>
+                <div class="info-note">
+                    Tesla AI 总部为 HP 旧址改造，公开资料无详细功能区面积细分。Tesla 于2023年租赁HP原园区，改造自用，具体功能区划分为内部信息。
+                </div>
+            </div>
+
+            <div class="section sources">
+                <h3 class="sources-title">数据来源</h3>
+                <ul class="sources-list">
+                    <li><a href="https://archive.shine.cn/business/auto/Tesla-shifts-gears-to-Texas-HQ/shdaily.shtml" target="_blank">Tesla shifts gears to Texas HQ - Shanghai Daily</a></li>
+                    <li><a href="https://www.britannica.com/topic/Tesla-Motors" target="_blank">Tesla Motors - Britannica</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Google DeepMind -->
+        <section id="googledm" class="page">
+            <div class="hero">
+                <img src="images/google.jpg" alt="Google DeepMind" class="hero-image" onerror="this.outerHTML='<div class=\'hero-fallback\'>Platform 37 效果图</div>'">
+            </div>
+            <div class="hero-content">
+                <p class="hero-label">英国 · 伦敦</p>
+                <h1 class="hero-title">Google DeepMind - Platform 37</h1>
+                <p class="hero-meta">Heatherwick + BIG 设计 | 2026年预计开放 | 7,000 员工</p>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">核心数据</h2>
+                <div class="data-grid">
+                    <div class="data-item">
+                        <p class="data-label">总面积</p>
+                        <p class="data-value">80,000+ ㎡ (861,100 sqft)</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">建筑形态</p>
+                        <p class="data-value">横向摩天楼 "landscraper"</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">尺寸</p>
+                        <p class="data-value">330米长 x 72米高 x 11层</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">设计师</p>
+                        <p class="data-value">Thomas Heatherwick + Bjarke Ingels Group</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">特色</p>
+                        <p class="data-value">悬挂式结构、低碳建材、屋顶花园</p>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="section">
+                <h2 class="section-title">功能区细分</h2>
+                <ul class="features">
+                    <li><span class="check">✓</span> AI Exchange: 地面层, 公共AI展厅、教育、展览</li>
+                    <li><span class="check">✓</span> 办公区: 2-11层, Google DeepMind团队</li>
+                    <li><span class="check">✓</span> 游泳池: 9楼, 25米</li>
+                    <li><span class="check">✓</span> 多功能运动场: 篮球、五人制足球、网球</li>
+                    <li><span class="check">✓</span> 屋顶花园: 顶层, 生态多样性保护</li>
+                </ul>
+            </div>
+
+            <div class="section sources">
+                <h3 class="sources-title">数据来源</h3>
+                <ul class="sources-list">
+                    <li><a href="https://deepmind.google/" target="_blank">Google DeepMind 官网</a></li>
+                    <li><a href="https://www.c-sharpcorner.com/news/google-deepmind-unveils-project-genie" target="_blank">Google DeepMind Project Genie - C# Corner</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Tencent -->
+        <section id="tencent" class="page">
+            <div class="hero">
+                <img src="images/tencent.jpg" alt="Tencent Binhai" class="hero-image" onerror="this.outerHTML='<div class=\'hero-fallback\'>Tencent 照片</div>'">
+            </div>
+            <div class="hero-content">
+                <p class="hero-label">中国 · 深圳</p>
+                <h1 class="hero-title">Tencent 滨海大厦</h1>
+                <p class="hero-meta">NBBJ 设计 | 2017年竣工 | 12,000+ 员工</p>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">核心数据</h2>
+                <div class="data-grid">
+                    <div class="data-item">
+                        <p class="data-label">总面积</p>
+                        <p class="data-value">345,570 ㎡ (3,720,000 sqft)</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">建筑</p>
+                        <p class="data-value">南塔 248m/50层 + 北塔 194m/41层</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">建筑师</p>
+                        <p class="data-value">NBBJ</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">投资</p>
+                        <p class="data-value">18亿元</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">绿色认证</p>
+                        <p class="data-value">LEED 金级, 二星绿色建筑</p>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="section">
+                <h2 class="section-title">功能区细分</h2>
+                <ul class="features">
+                    <li><span class="check">✓</span> 文化连接层: 3-6层, 餐厅、多功能厅</li>
+                    <li><span class="check">✓</span> 健康连接层: 22-25层, 健身房、跑道、篮球场、羽毛球、攀岩</li>
+                    <li><span class="check">✓</span> 知识连接层: 35-37层, 会议室、工作室</li>
+                    <li><span class="check">✓</span> 入口大堂: 每塔1层</li>
+                    <li><span class="check">✓</span> 屋顶花园: 双塔</li>
+                </ul>
+            </div>
+
+            <div class="section sources">
+                <h3 class="sources-title">数据来源</h3>
+                <ul class="sources-list">
+                    <li><a href="https://www.tencent.com/en-us/about.html" target="_blank">Tencent Official Website</a></li>
+                    <li><a href="https://www.dezeen.com/2018/04/12/nbbj-architecture-skyscrapers-tencent-offices-headquarters-shenzhen-china/" target="_blank">NBBJ completes Tencent headquarters in Shenzhen - Dezeen</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Alibaba -->
+        <section id="alibaba" class="page">
+            <div class="hero">
+                <img src="images/阿里达摩院落.jpg" alt="Alibaba DAMO" class="hero-image" onerror="this.outerHTML='<div class=\'hero-fallback\'>Alibaba 照片</div>'">
+            </div>
+            <div class="hero-content">
+                <p class="hero-label">中国 · 杭州</p>
+                <h1 class="hero-title">阿里巴巴达摩院 全球总部</h1>
+                <p class="hero-meta">Aedas 设计 | 2023年竣工 | 全球8个研究中心</p>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">核心数据</h2>
+                <div class="data-grid">
+                    <div class="data-item">
+                        <p class="data-label">一期建筑面积</p>
+                        <p class="data-value">480,000 ㎡ (南湖园区一期)</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">一期占地</p>
+                        <p class="data-value">228,000 ㎡ (342亩)</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">地上/地下</p>
+                        <p class="data-value">地上28万㎡ + 地下19万㎡</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">建筑形态</p>
+                        <p class="data-value">菩提叶造型，手指状板楼</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">功能</p>
+                        <p class="data-value">办公、实验室、访客接待、展示、生活配套</p>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="section">
+                <h2 class="section-title">功能区细分</h2>
+                <ul class="features">
+                    <li><span class="check">✓</span> 办公模块: 每层2,000-4,000㎡，可灵活分割</li>
+                    <li><span class="check">✓</span> 访客接待和展示空间</li>
+                    <li><span class="check">✓</span> 独立/特殊实验室</li>
+                    <li><span class="check">✓</span> 园区生活配套</li>
+                    <li><span class="check">✓</span> 整体规划3887亩，分三期建设</li>
+                </ul>
+            </div>
+
+            <div class="section sources">
+                <h3 class="sources-title">数据来源</h3>
+                <ul class="sources-list">
+                    <li><a href="https://www.jiemian.com/article/4071826.html" target="_blank">阿里达摩院全球总部开工 - 界面新闻</a></li>
+                    <li><a href="https://hznews.hangzhou.com.cn/xinzheng/quxian/content/2019-12/17/content_7643303.htm" target="_blank">达摩院南湖园区项目落地 - 杭州网</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Baidu -->
+        <section id="baidu" class="page">
+            <div class="hero">
+                <img src="images/百度新总部.jpeg" alt="Baidu Building" class="hero-image" onerror="this.outerHTML='<div class=\'hero-fallback\'>Baidu 照片</div>'">
+            </div>
+            <div class="hero-content">
+                <p class="hero-label">中国 · 北京</p>
+                <h1 class="hero-title">百度科技园</h1>
+                <p class="hero-meta">Aedas 设计 | 2014年竣工 | 300,000+ ㎡</p>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">核心数据</h2>
+                <div class="data-grid">
+                    <div class="data-item">
+                        <p class="data-label">总面积</p>
+                        <p class="data-value">300,000+ ㎡ (3,230,000 sqft)</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">建筑形态</p>
+                        <p class="data-value">∞符号造型 / 莫比乌斯环, 5栋大楼廊桥连接</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">设计师</p>
+                        <p class="data-value">Aedas</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">位置</p>
+                        <p class="data-value">中关村软件园二期</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">LEED认证</p>
+                        <p class="data-value">金级认证</p>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="section">
+                <h2 class="section-title">功能区细分</h2>
+                <ul class="features">
+                    <li><span class="check">✓</span> 5栋研发大楼: 通过80米跨度钢桁架廊桥连接</li>
+                    <li><span class="check">✓</span> 围合庭院: 两个总面积达20,000㎡的中庭空间</li>
+                    <li><span class="check">✓</span> 多功能报告厅: 500座, 空中俯瞰像熊掌</li>
+                    <li><span class="check">✓</span> 员工设施: 睡眠舱、中医按摩室、健身房</li>
+                    <li><span class="check">✓</span> 屋顶跑道、3座17米攀岩墙</li>
+                    <li><span class="check">✓</span> 下沉庭院、太阳能光伏系统</li>
+                </ul>
+            </div>
+
+            <div class="section sources">
+                <h3 class="sources-title">数据来源</h3>
+                <ul class="sources-list">
+                    <li><a href="https://baike.baidu.com/item/百度科技园/2773125" target="_blank">百度科技园 - 百度百科</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ByteDance -->
+        <section id="bytedance" class="page">
+            <div class="hero">
+                <img src="images/字节跳动成都.jpg" alt="ByteDance 成都创新中心" class="hero-image" onerror="this.outerHTML='<div class=\'hero-fallback\'>ByteDance 照片</div>'">
+            </div>
+            <div class="hero-content">
+                <p class="hero-label">中国 · 成都</p>
+                <h1 class="hero-title">字节跳动创新业务中心</h1>
+                <p class="hero-meta">成都高新区 | 2020年签约 | 投资100亿元</p>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">核心数据</h2>
+                <div class="data-grid">
+                    <div class="data-item">
+                        <p class="data-label">总投资</p>
+                        <p class="data-value">100亿元</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">总面积</p>
+                        <p class="data-value">113,000 ㎡ (11.3万㎡)</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">位置</p>
+                        <p class="data-value">成都高新区新经济活力区</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">员工规模</p>
+                        <p class="data-value">10,000人 (目标)</p>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="section">
+                <h2 class="section-title">功能区细分</h2>
+                <ul class="features">
+                    <li><span class="check">✓</span> 16层办公楼: 1栋</li>
+                    <li><span class="check">✓</span> 12层办公楼: 1栋</li>
+                    <li><span class="check">✓</span> 3层商业裙房: 1栋</li>
+                    <li><span class="check">✓</span> 2层报告厅: 1栋</li>
+                    <li><span class="check">✓</span> 智能教育系统、交互式多媒体办公系统</li>
+                    <li><span class="check">✓</span> 文创、直播产业园</li>
+                </ul>
+            </div>
+
+            <div class="section sources">
+                <h3 class="sources-title">数据来源</h3>
+                <ul class="sources-list">
+                    <li><a href="https://www.yicai.com/news/100748329.html" target="_blank">字节跳动创新业务中心落地成都高新区 - 第一财经</a></li>
+                    <li><a href="https://www.jiemian.com/article/11666125.html" target="_blank">成都字节跳动办公楼项目通过竣工验收 - 界面新闻</a></li>
+                    <li><a href="https://www.nbd.com.cn/articles/2023-06-09/2864256.html" target="_blank">成都字节跳动办公楼全面封顶 - 每日经济新闻</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- iFlytek -->
+        <section id="iflytek" class="page">
+            <div class="hero">
+                <img src="images/科大讯飞.jpg" alt="iFlytek HQ" class="hero-image" onerror="this.outerHTML='<div class=\'hero-fallback\'>科大讯飞 照片</div>'">
+            </div>
+            <div class="hero-content">
+                <p class="hero-label">中国 · 合肥</p>
+                <h1 class="hero-title">科大讯飞 讯飞小镇</h1>
+                <p class="hero-meta">line+ 设计 | 2024年竣工 | ~9,752 员工 (全员, 2024)</p>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">核心数据</h2>
+                <div class="data-grid">
+                    <div class="data-item">
+                        <p class="data-label">总面积</p>
+                        <p class="data-value">400,000 ㎡ (4,300,000 sqft)</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">占地面积</p>
+                        <p class="data-value">200亩 (约13.3公顷)</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">建筑</p>
+                        <p class="data-value">A1/A2/A3/A4四栋 (形如耳朵)</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">建筑师</p>
+                        <p class="data-value">line+ (孟凡浩)</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">理念</p>
+                        <p class="data-value">"公园X" - 总部在公园</p>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="section">
+                <h2 class="section-title">功能区细分</h2>
+                <ul class="features">
+                    <li><span class="check">✓</span> 一期地上 A1+A2: 84,628 ㎡, 2024年9月启用</li>
+                    <li><span class="check">✓</span> 一期地下: 42,361 ㎡, 停车场等</li>
+                    <li><span class="check">✓</span> 人工智能体验馆: 展示最新AI技术</li>
+                    <li><span class="check">✓</span> 共享剧场: 北侧中庭</li>
+                    <li><span class="check">✓</span> 共生广场: 南侧中庭</li>
+                </ul>
+            </div>
+
+            <div class="section sources">
+                <h3 class="sources-title">数据来源</h3>
+                <ul class="sources-list">
+                    <li><a href="https://finance.sina.com.cn/roll/2024-09-02/doc-incmtfhu1073081.shtml" target="_blank">科大讯飞AI总部园区启用 - 新浪财经</a></li>
+                    <li><a href="https://www.sohu.com/a/819719589_121798711" target="_blank">科技与自然融合：探秘科大讯飞AI总部园区 - 搜狐</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- SenseTime -->
+        <section id="sensetime" class="page">
+            <div class="hero">
+                <img src="images/商汤总部.jpg" alt="SenseTime HQ" class="hero-image" onerror="this.outerHTML='<div class=\'hero-fallback\'>SenseTime 照片</div>'">
+            </div>
+            <div class="hero-content">
+                <p class="hero-label">中国 · 上海</p>
+                <h1 class="hero-title">商汤科技 中国总部</h1>
+                <p class="hero-meta">漕河泾开发区 | 2019年落户 | ~3,756 员工 (2024年末)</p>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">核心数据</h2>
+                <div class="data-grid">
+                    <div class="data-item">
+                        <p class="data-label">中国总部</p>
+                        <p class="data-value">上海漕河泾开发区新洲大楼</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">定位</p>
+                        <p class="data-value">中国总部暨全球研发总部</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">落户时间</p>
+                        <p class="data-value">2019年8月31日 (WAIC 2019)</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">功能</p>
+                        <p class="data-value">计算机视觉、AI研发</p>
+                    </div>
+                    <div class="data-item">
+                        <p class="data-label">员工</p>
+                        <p class="data-value">~3,756 (2024年末)</p>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="section">
+                <h2 class="section-title">功能区细分</h2>
+                <div class="info-note">
+                    商汤科技为办公室租赁模式，无独立标志性建筑。公开资料仅有总租赁面积，无功能区面积细分。
+                </div>
+            </div>
+
+            <div class="section sources">
+                <h3 class="sources-title">数据来源</h3>
+                <ul class="sources-list">
+                    <li><a href="https://www.shlingang.com/lg1/lingangjituan/xwzx/zcgx/201909/t20190901_18636.shtml" target="_blank">商汤集团中国总部落户漕河泾 - 临港集团</a></li>
+                    <li><a href="https://www.yicaiglobal.com/news/sensetime-reopens-usd769-million-hong-kong-ipo-cuts-overseas-cornerstone-investors" target="_blank">SenseTime Revives Hong Kong IPO - Yicai Global</a></li>
+                </ul>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>所有照片均来自公开网络资源，部分公司因无公开建筑照片或仅有效果图而标注说明。</p>
+        <p>数据更新时间: 2026年4月 | 来源: Wikimedia Commons, 公司官网, 新闻报道</p>
+    </footer>
+
+    <script>
+        function showPage(pageId, element) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+
+            // Remove active from all nav links
+            document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+
+            // Show selected page
+            document.getElementById(pageId).classList.add('active');
+
+            // Mark nav link as active
+            if (element) {
+                element.classList.add('active');
+            }
+
+            // Scroll to top
+            window.scrollTo(0, 0);
+
+            // Animate bars on summary page
+            if (pageId === 'summary') {
+                document.querySelectorAll('.bar-chart').forEach(c => c.classList.remove('bars-animated'));
+                setTimeout(() => document.querySelectorAll('.bar-chart').forEach(c => c.classList.add('bars-animated')), 50);
+            }
+        }
+
+        // Initial animation on page load for summary
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => document.querySelectorAll('.bar-chart').forEach(c => c.classList.add('bars-animated')), 300);
+        });
+    </script>
+</body>
+</html>

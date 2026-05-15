@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>开发强度潜力分析</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { display: flex; height: 100vh; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; background: #fff; color: #000; }
+        #sidebar { width: 340px; background: #fafafa; border-right: 1px solid #ddd; display: flex; flex-direction: column; overflow: hidden; }
+        #sidebar-header { padding: 20px 16px; background: #fff; border-bottom: 1px solid #ddd; }
+        #sidebar-header h1 { font-size: 13px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #000; }
+        #mode-toggle { padding: 16px; display: flex; gap: 8px; border-bottom: 1px solid #ddd; }
+        #mode-toggle button { flex: 1; padding: 10px; background: #fff; border: 1px solid #000; color: #000; font-size: 11px; letter-spacing: 1px; cursor: pointer; transition: all 0.2s; }
+        #mode-toggle button.active { background: #000; color: #fff; }
+        #weight-panel { padding: 16px; border-bottom: 1px solid #ddd; }
+        #weight-panel h3 { font-size: 10px; color: #666; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+        #weight-panel .formula { font-size: 10px; color: #666; background: #fff; padding: 10px; margin-bottom: 14px; font-family: 'SF Mono', monospace; border-left: 2px solid #ddd; }
+        .weight-row { display: flex; align-items: center; margin-bottom: 10px; }
+        .weight-row label { width: 80px; font-size: 10px; color: #333; letter-spacing: 0.5px; }
+        .weight-row input[type="range"] { flex: 1; height: 2px; -webkit-appearance: none; background: #ddd; outline: none; }
+        .weight-row input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; background: #000; cursor: pointer; }
+        .weight-row .weight-value { width: 32px; text-align: right; font-size: 11px; color: #000; font-weight: 600; }
+        #reset-weights { width: 100%; padding: 8px; background: #fff; color: #000; border: 1px solid #000; font-size: 10px; letter-spacing: 1px; cursor: pointer; margin-top: 4px; }
+        #reset-weights:hover { background: #000; color: #fff; }
+        #search { padding: 12px 16px; border-bottom: 1px solid #ddd; }
+        #search input { width: 100%; padding: 10px 12px; background: #fff; border: 1px solid #ddd; color: #000; font-size: 12px; outline: none; }
+        #search input::placeholder { color: #999; }
+        #search input:focus { border-color: #000; }
+        #list { flex: 1; overflow-y: auto; padding: 8px; }
+        #list::-webkit-scrollbar { width: 4px; }
+        #list::-webkit-scrollbar-track { background: #fafafa; }
+        #list::-webkit-scrollbar-thumb { background: #ccc; }
+        .land-item { padding: 12px; margin-bottom: 2px; background: #fff; cursor: pointer; border-left: 2px solid #ddd; transition: all 0.15s; }
+        .land-item:hover { background: #f5f5f5; border-left-color: #000; }
+        .land-item.active { background: #f5f5f5; border-left-color: #000; }
+        .land-item .code { font-size: 12px; font-weight: 600; letter-spacing: 0.5px; }
+        .land-item .meta { font-size: 10px; color: #666; margin-top: 6px; display: flex; gap: 8px; }
+        .potential-bar { height: 2px; background: #eee; margin-top: 8px; }
+        .potential-fill { height: 100%; background: linear-gradient(90deg, #2ecc71, #f1c40f, #e74c3c); transition: width 0.3s; }
+        #map-container { flex: 1; position: relative; background: #f5f5f5; }
+        #canvas { width: 100%; height: 100%; }
+        #info-panel { position: absolute; top: 16px; right: 16px; background: #fff; border: 1px solid #ddd; min-width: 280px; z-index: 100; display: none; max-height: calc(100vh - 32px); overflow-y: auto; }
+        #info-panel.show { display: block; }
+        #info-panel h2 { font-size: 14px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #ddd; letter-spacing: 1px; }
+        #info-panel .info-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 11px; }
+        #info-panel .label { color: #666; }
+        #info-panel .value { color: #000; }
+        #info-panel .close-btn { position: absolute; top: 12px; right: 12px; background: none; border: none; color: #999; font-size: 18px; cursor: pointer; }
+        #info-panel .close-btn:hover { color: #000; }
+        #potential-section { background: #fafafa; padding: 14px; margin-top: 12px; border-top: 1px solid #ddd; }
+        #potential-section h3 { font-size: 9px; color: #666; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+        .pot-row { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 8px; }
+        .pot-value { color: #333; }
+        #legend { position: absolute; bottom: 16px; left: 16px; background: #fff; border: 1px solid #ddd; padding: 12px; z-index: 100; }
+        #legend h4 { font-size: 9px; color: #666; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+        .legend-gradient { width: 100px; height: 4px; background: linear-gradient(90deg, #2ecc71, #f1c40f, #e74c3c); }
+        .legend-labels { display: flex; justify-content: space-between; font-size: 9px; color: #666; margin-top: 6px; letter-spacing: 0.5px; }
+        #zoom-controls { position: absolute; bottom: 16px; right: 16px; z-index: 100; }
+        #zoom-controls button { display: block; width: 32px; height: 32px; background: #fff; border: 1px solid #ddd; color: #000; font-size: 16px; cursor: pointer; margin-top: 4px; }
+        #zoom-controls button:hover { background: #000; color: #fff; }
+    </style>
+</head>
+<body>
+    <div id="sidebar">
+        <div id="sidebar-header"><h1>DEVELOPMENT POTENTIAL</h1></div>
+        <div id="mode-toggle">
+            <button onclick="setMode('potential')" class="active" id="btn-potential">潜力分析</button>
+            <button onclick="setMode('landuse')" id="btn-landuse">用地图</button>
+        </div>
+        <div id="weight-panel">
+            <h3>WEIGHT SETTINGS</h3>
+            <div class="formula">
+                评分 = (FAR标准化分×W1 + 形态系数×W2 + 面积系数×W3) / 总权重 × 100
+            </div>
+            <div class="weight-row">
+                <label>容积率 FAR</label>
+                <input type="range" id="w-far" min="0" max="100" value="40">
+                <span class="weight-value" id="w-far-val">40</span>
+            </div>
+            <div class="weight-row">
+                <label>形态系数</label>
+                <input type="range" id="w-form" min="0" max="100" value="30">
+                <span class="weight-value" id="w-form-val">30</span>
+            </div>
+            <div class="weight-row">
+                <label>面积系数</label>
+                <input type="range" id="w-area" min="0" max="100" value="30">
+                <span class="weight-value" id="w-area-val">30</span>
+            </div>
+            <button id="reset-weights" onclick="resetWeights()">RESET DEFAULT</button>
+        </div>
+        <div id="search"><input type="text" id="search-input" placeholder="SEARCH..."></div>
+        <div id="list"></div>
+    </div>
+    <div id="map-container">
+        <canvas id="canvas"></canvas>
+        <div id="info-panel">
+            <button class="close-btn" onclick="closeInfo()">×</button>
+            <h2 id="info-code">-</h2>
+            <div class="info-row"><span class="label">用地类型</span><span class="value" id="info-layer">-</span></div>
+            <div class="info-row"><span class="label">地块面积</span><span class="value" id="info-area">-</span></div>
+            <div id="potential-section">
+                <h3>INDICATORS</h3>
+                <div class="pot-row"><span>基本容积率(FAR)</span><span class="pot-value" id="info-base-far">-</span></div>
+                <div class="pot-row"><span>调整容积率</span><span class="pot-value" id="info-adj-far">-</span></div>
+                <div class="pot-row"><span>最大建筑面积</span><span class="pot-value" id="info-floor-area">-</span></div>
+                <div class="pot-row"><span>形态系数</span><span class="pot-value" id="info-form">-</span></div>
+                <div class="pot-row"><span>面积系数</span><span class="pot-value" id="info-area-corr">-</span></div>
+                <div class="pot-row" style="margin-top:12px;padding-top:12px;border-top:1px solid #ccc;"><span>开发潜力评分</span><span class="pot-value" id="info-score">-</span></div>
+            </div>
+        </div>
+        <div id="legend">
+            <h4>开发潜力评分</h4>
+            <div class="legend-gradient"></div>
+            <div class="legend-labels"><span>低</span><span>中</span><span>高</span></div>
+        </div>
+        <div id="zoom-controls">
+            <button onclick="zoomIn()">+</button>
+            <button onclick="zoomOut()">−</button>
+        </div>
+    </div>
+    <script>
+        let canvas, ctx, landData = [], bounds, scale = 1, offsetX = 0, offsetY = 0, selectedCode = null, hoveredCode = null;
+        let mode = 'potential';
+        let weights = { far: 40, form: 30, area: 30 };
+
+        // FAR参考值
+        const FAR_STANDARDS = {
+            'YD-A': 1.5, 'YD-A33': 2.0, 'YD-A4': 1.8, 'YD-B1B2': 3.5, 'YD-B41': 4.0,
+            'YD-E1': 0.8, 'YD-E2': 0.6, 'YD-G1': 0.5, 'YD-G2': 0.3, 'YD-R2': 2.5,
+            'YD-R2B1': 3.0, 'YD-S41': 0.4, 'YD-U12': 0.8
+        };
+
+        function init() {
+            canvas = document.getElementById('canvas');
+            ctx = canvas.getContext('2d');
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            canvas.addEventListener('click', onCanvasClick);
+            canvas.addEventListener('mousemove', onCanvasMouseMove);
+
+            // 权重滑块事件
+            ['far', 'form', 'area'].forEach(key => {
+                const slider = document.getElementById('w-' + key);
+                const val = document.getElementById('w-' + key + '-val');
+                slider.addEventListener('input', function() {
+                    weights[key] = parseInt(this.value);
+                    val.textContent = this.value;
+                    recalculateScores();
+                });
+            });
+
+            loadGeoJSON();
+        }
+
+        function resizeCanvas() {
+            const c = document.getElementById('map-container');
+            canvas.width = c.clientWidth;
+            canvas.height = c.clientHeight;
+            render();
+        }
+
+        async function loadGeoJSON() {
+            try {
+                const r = await fetch('land_use_potential.geojson?t=' + Date.now());
+                landData = await r.json();
+                landData = landData.features;
+                recalculateScores();
+                renderList(landData);
+                calculateBounds();
+                fitToScreen();
+                render();
+            } catch(e) { console.error(e); }
+        }
+
+        function getLandUsePrefix(code) {
+            return code.replace(/-\d+$/, '');
+        }
+
+        function getAreaCorrection(areaHa) {
+            if (areaHa < 0.5) return 0.6;
+            if (areaHa < 2) return 0.85;
+            if (areaHa <= 10) return 1.0;
+            return 0.95;
+        }
+
+        function normalizeFar(far, prefix) {
+            const baseFar = FAR_STANDARDS[prefix] || 1.5;
+            return Math.min(1, far / (baseFar * 1.5));
+        }
+
+        function recalculateScores() {
+            landData.forEach(f => {
+                const p = f.properties;
+                const prefix = getLandUsePrefix(p.code);
+                const areaHa = p.area_ha;
+                const baseFar = FAR_STANDARDS[prefix] || 1.5;
+                const formFactor = p.form_factor || 0.5;
+                const areaCorr = getAreaCorrection(areaHa);
+                const adjFar = baseFar * formFactor * areaCorr;
+
+                const farScore = normalizeFar(adjFar, prefix) * 100;
+                const formScore = formFactor * 100;
+                const areaScore = areaCorr * 100;
+
+                const totalWeight = weights.far + weights.form + weights.area;
+                const score = (farScore * weights.far + formScore * weights.form + areaScore * weights.area) / totalWeight;
+
+                p.adjusted_far = adjFar;
+                p.area_correction = areaCorr;
+                p.potential_score = Math.round(score * 10) / 10;
+            });
+
+            // 重新排序
+            landData.sort((a, b) => b.properties.potential_score - a.properties.potential_score);
+            renderList(landData);
+            render();
+        }
+
+        function resetWeights() {
+            weights = { far: 40, form: 30, area: 30 };
+            document.getElementById('w-far').value = 40;
+            document.getElementById('w-form').value = 30;
+            document.getElementById('w-area').value = 30;
+            document.getElementById('w-far-val').textContent = '40';
+            document.getElementById('w-form-val').textContent = '30';
+            document.getElementById('w-area-val').textContent = '30';
+            recalculateScores();
+        }
+
+        function renderList(features) {
+            const list = document.getElementById('list');
+            list.innerHTML = '';
+            features.forEach(f => {
+                const p = f.properties;
+                const d = document.createElement('div');
+                d.className = 'land-item';
+                d.dataset.code = p.code;
+                const score = p.potential_score || 0;
+                d.innerHTML = '<div class="code">' + p.code + '</div><div class="meta"><span class="stat-badge stat-far">FAR ' + (p.adjusted_far || '-').toFixed(2) + '</span><span class="stat-badge stat-score">' + score.toFixed(0) + '分</span></div><div class="potential-bar"><div class="potential-fill" style="width:' + score + '%"></div></div>';
+                d.onclick = () => selectLand(p.code);
+                list.appendChild(d);
+            });
+        }
+
+        function calculateBounds() {
+            let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+            landData.forEach(f => {
+                f.geometry.coordinates[0].forEach(c => {
+                    minX=Math.min(minX,c[0]); maxX=Math.max(maxX,c[0]);
+                    minY=Math.min(minY,c[1]); maxY=Math.max(maxY,c[1]);
+                });
+            });
+            bounds = {minX,minY,maxX,maxY,width:maxX-minX,height:maxY-minY};
+        }
+
+        function fitToScreen() {
+            const p = 50, aw = canvas.width-p*2, ah = canvas.height-p*2;
+            scale = Math.min(aw/bounds.width, ah/bounds.height);
+            offsetX = p + (aw - bounds.width*scale)/2 - bounds.minX*scale;
+            offsetY = p + (ah - bounds.height*scale)/2 - bounds.minY*scale;
+        }
+
+        function toScreen(x,y) { return { x: x*scale+offsetX, y: canvas.height-(y*scale+offsetY)}; }
+
+        function getPotentialColor(score) {
+            if (score < 33) return [46, 204, 113];
+            if (score < 66) {
+                const t = (score - 33) / 33;
+                return [46 + (241-46)*t, 204 + (196-204)*t, 113 + (15-113)*t];
+            }
+            const t = (score - 66) / 34;
+            return [241 + (231-241)*t, 196 + (76-196)*t, 15 + (60-15)*t];
+        }
+
+        function render() {
+            if (!landData.length) return;
+            ctx.fillStyle = '#f0f0f0';
+            ctx.fillRect(0,0,canvas.width,canvas.height);
+            landData.forEach(f => {
+                const p = f.properties, coords = f.geometry.coordinates[0];
+                ctx.beginPath();
+                coords.forEach((c,i) => { const pt=toScreen(c[0],c[1]); i===0?ctx.moveTo(pt.x,pt.y):ctx.lineTo(pt.x,pt.y); });
+                ctx.closePath();
+
+                const score = p.potential_score || 50;
+                let fillColor;
+                if (mode === 'potential') {
+                    const col = getPotentialColor(score);
+                    const isSelected = p.code === selectedCode;
+                    const isHovered = p.code === hoveredCode;
+                    const alpha = isSelected ? 0.8 : (isHovered ? 0.6 : 0.4);
+                    ctx.fillStyle = 'rgba(' + col[0] + ',' + col[1] + ',' + col[2] + ',' + alpha + ')';
+                    ctx.strokeStyle = isSelected ? '#e74c3c' : (isHovered ? '#333' : '#666');
+                } else {
+                    const colorMap = {1:[255,0,0],2:[255,255,0],3:[0,255,0],4:[0,255,255],7:[255,255,255],13:[255,0,255],30:[255,165,0],94:[144,238,144],111:[255,192,203],152:[221,160,221],211:[135,206,235],254:[0,0,0]};
+                    const col = colorMap[p.color]||[135,206,235];
+                    ctx.fillStyle = 'rgba('+col[0]+','+col[1]+','+col[2]+',0.4)';
+                    ctx.strokeStyle = p.code===selectedCode?'#e74c3c':'#666';
+                }
+                ctx.lineWidth = p.code===selectedCode?3:1;
+                ctx.fill();
+                ctx.stroke();
+
+                if (mode === 'potential') {
+                    const c = toScreen(p.centroid[0],p.centroid[1]);
+                    ctx.fillStyle = p.code===selectedCode?'#fff':'#333';
+                    ctx.font = (p.code===selectedCode?14:12)+'px sans-serif';
+                    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                    ctx.fillText(p.code, c.x, c.y);
+                }
+            });
+        }
+
+        function setMode(m) {
+            mode = m;
+            document.getElementById('btn-potential').classList.toggle('active', m==='potential');
+            document.getElementById('btn-landuse').classList.toggle('active', m==='landuse');
+            document.getElementById('legend').style.display = m==='potential' ? 'block' : 'none';
+            resizeCanvas();
+        }
+
+        function selectLand(code) {
+            selectedCode = code;
+            document.querySelectorAll('.land-item').forEach(i => i.classList.toggle('active', i.dataset.code===code));
+            const f = landData.find(x=>x.properties.code===code);
+            if (f) showInfo(f.properties);
+            render();
+        }
+
+        function showInfo(p) {
+            document.getElementById('info-code').textContent = p.code;
+            document.getElementById('info-layer').textContent = p.layer;
+            document.getElementById('info-area').textContent = p.area_ha + ' 公顷';
+            document.getElementById('info-base-far').textContent = p.base_far || '-';
+            document.getElementById('info-adj-far').textContent = p.adjusted_far ? p.adjusted_far.toFixed(2) : '-';
+            document.getElementById('info-floor-area').textContent = p.adjusted_far ? (p.area_ha * 10000 * p.adjusted_far / 10000).toFixed(2) + ' 万m²' : '-';
+            document.getElementById('info-form').textContent = p.form_factor ? p.form_factor.toFixed(3) : '-';
+            document.getElementById('info-area-corr').textContent = p.area_correction ? p.area_correction.toFixed(2) : '-';
+            document.getElementById('info-score').textContent = p.potential_score + ' 分';
+            document.getElementById('info-panel').classList.add('show');
+        }
+
+        function closeInfo() {
+            document.getElementById('info-panel').classList.remove('show');
+            selectedCode = null;
+            document.querySelectorAll('.land-item').forEach(i => i.classList.remove('active'));
+            render();
+        }
+
+        function isPointInPolygon(x,y,coords) {
+            let inside=false;
+            for (let i=0,j=coords.length-1;i<coords.length;j=i++) {
+                const xi=coords[i][0],yi=coords[i][1],xj=coords[j][0],yj=coords[j][1];
+                if (((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi)) inside=!inside;
+            }
+            return inside;
+        }
+
+        function onCanvasClick(e) {
+            const rect = canvas.getBoundingClientRect();
+            const mx = e.clientX-rect.left, my = e.clientY-rect.top;
+            const wx = (mx-offsetX)/scale, wy = (canvas.height-my-offsetY)/scale;
+            for (const f of landData) {
+                if (isPointInPolygon(wx,wy,f.geometry.coordinates[0])) { selectLand(f.properties.code); return; }
+            }
+        }
+
+        function onCanvasMouseMove(e) {
+            const rect = canvas.getBoundingClientRect();
+            const mx = e.clientX-rect.left, my = e.clientY-rect.top;
+            const wx = (mx-offsetX)/scale, wy = (canvas.height-my-offsetY)/scale;
+            let found = null;
+            for (const f of landData) {
+                if (isPointInPolygon(wx,wy,f.geometry.coordinates[0])) { found=f.properties.code; break; }
+            }
+            if (found!==hoveredCode) { hoveredCode=found; canvas.style.cursor=found?'pointer':'default'; render(); }
+        }
+
+        function zoomIn() { scale*=1.3; render(); }
+        function zoomOut() { scale/=1.3; render(); }
+
+        document.getElementById('search-input').addEventListener('input', function(e) {
+            const q=e.target.value.toLowerCase();
+            const filtered = landData.filter(f=>f.properties.code.toLowerCase().includes(q));
+            renderList(filtered);
+        });
+
+        init();
+    </script>
+</body>
+</html>
