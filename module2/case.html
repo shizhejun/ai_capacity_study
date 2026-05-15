@@ -130,65 +130,6 @@
             color: #333;
         }
 
-        /* 时间线 */
-        .timeline {
-            position: relative;
-            padding-left: 30px;
-        }
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 8px;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background: #000;
-        }
-        .timeline-item {
-            position: relative;
-            margin-bottom: 24px;
-            padding: 16px 20px;
-            border: 1px solid #ddd;
-            background: #fafafa;
-        }
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            left: -26px;
-            top: 20px;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #000;
-            border: 3px solid #fff;
-            box-shadow: 0 0 0 2px #000;
-        }
-        .timeline-phase {
-            font-size: 10px;
-            font-weight: 600;
-            color: #666;
-            margin-bottom: 6px;
-            letter-spacing: 1px;
-        }
-        .timeline-title {
-            font-size: 13px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-        .timeline-content {
-            font-size: 12px;
-            line-height: 1.7;
-            color: #444;
-        }
-        .timeline-action {
-            display: inline-block;
-            background: #000;
-            color: #fff;
-            padding: 2px 8px;
-            font-size: 10px;
-            margin-top: 8px;
-        }
-
         /* 对比表格 */
         .comparison-table {
             width: 100%;
@@ -262,6 +203,100 @@
             font-size: 12px;
             line-height: 1.8;
             color: #333;
+        }
+
+        /* 左右对照布局 */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 80px 1fr;
+            gap: 0;
+            margin: 16px 0;
+        }
+        .compare-left, .compare-right {
+            padding: 16px;
+            border: 1px solid #ddd;
+        }
+        .compare-left {
+            background: #fafafa;
+        }
+        .compare-right {
+            background: #fff;
+        }
+        .compare-center {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0 8px;
+            font-size: 11px;
+            color: #666;
+            background: #f5f5f5;
+            border-top: 1px solid #ddd;
+            border-bottom: 1px solid #ddd;
+        }
+        .compare-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 16px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .compare-header.national {
+            background: #000;
+            color: #fff;
+        }
+        .compare-header.guangzhou {
+            background: #333;
+            color: #fff;
+        }
+        .compare-header.problem {
+            background: #666;
+            color: #fff;
+        }
+        .compare-header.solution {
+            background: #000;
+            color: #fff;
+        }
+        .compare-row {
+            display: grid;
+            grid-template-columns: 1fr 80px 1fr;
+            gap: 0;
+            margin-bottom: 12px;
+        }
+        .compare-row:last-child {
+            margin-bottom: 0;
+        }
+        .compare-row .compare-left,
+        .compare-row .compare-right {
+            padding: 12px;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+        .compare-row .compare-left {
+            border-right: none;
+        }
+        .compare-row .compare-right {
+            border-left: none;
+        }
+        .compare-row .compare-center {
+            background: #f0f0f0;
+            font-size: 10px;
+            font-weight: 600;
+            color: #000;
+            border: 1px solid #ddd;
+            border-left: none;
+            border-right: none;
+        }
+        .compare-section {
+            margin-bottom: 32px;
+        }
+        .compare-section-title {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #000;
         }
 
         /* 导航链接 */
@@ -340,45 +375,76 @@
 
         <!-- 传导分析 -->
         <div class="case-section">
-            <h2 class="section-title"><span>02</span>传导关系分析：政策传导的四个关键节点</h2>
+            <h2 class="section-title"><span>02</span>传导关系分析：左右对照</h2>
 
-            <div class="timeline">
-                <div class="timeline-item">
-                    <div class="timeline-phase">节点一 · 顶层设计</div>
-                    <div class="timeline-title">全国政策定框架：2026年政府工作报告</div>
-                    <div class="timeline-content">
-                        <p>2026年3月5日，政府工作报告将房地产相关内容置于"风险防范化解"框架下，核心举措涵盖：因城施策"控增量、去库存、优供给"、深化公积金改革、推进"好房子"建设等。<sup>[1]</sup></p>
-                        <span class="timeline-action">信息来源：2026年政府工作报告</span>
+            <div class="compare-section">
+                <div class="compare-header national">
+                    <span>全国政策</span>
+                    <span>广州响应</span>
+                </div>
+                <div class="compare-row">
+                    <div class="compare-left">
+                        <strong>去库存</strong><br>
+                        收购存量商品房用于保障性住房<br>
+                        <span style="font-size: 11px; color: #666;">来源：[1]</span>
+                    </div>
+                    <div class="compare-center">传导</div>
+                    <div class="compare-right">
+                        <strong>收购保障房 3万套</strong><br>
+                        广州推进存量商品房收购，用于保障房和安置房<br>
+                        <span style="font-size: 11px; color: #666;">来源：[5]</span>
                     </div>
                 </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-phase">节点二 · 地方响应</div>
-                    <div class="timeline-title">广州速度：30天内出台配套政策</div>
-                    <div class="timeline-content">
-                        <p>4月30日，广州在国家政策发布后约30天内，印发了地方实施意见，明确：公积金单人最高贷100万、两人及以上贷200万、育儿家庭可叠加；卖旧买新补贴贷款总额1%、单套最高3万元；房票适用范围拓展至商办物业。<sup>[2]</sup></p>
-                        <p>对比：原政策（2024年11月）公积金单人最高80万，两人及以上160万。<sup>[4]</sup></p>
-                        <span class="timeline-action">信息来源：广州市人民政府官网</span>
+                <div class="compare-row">
+                    <div class="compare-left">
+                        <strong>控增量</strong><br>
+                        科学安排土地供应，引导配置金融资源<br>
+                        <span style="font-size: 11px; color: #666;">来源：[1]</span>
+                    </div>
+                    <div class="compare-center">传导</div>
+                    <div class="compare-right">
+                        <strong>商品住宅用地减少 58%</strong><br>
+                        2026年仅216公顷，同比2025年515公顷<br>
+                        <span style="font-size: 11px; color: #666;">来源：[3]</span>
                     </div>
                 </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-phase">节点三 · 量化落地</div>
-                    <div class="timeline-title">土地供应量化：商品住宅用地减少58%</div>
-                    <div class="timeline-content">
-                        <p>5月12日公布的供地计划显示：2026年广州商品住宅用地216公顷，相较2025年515公顷大幅减少58.06%。这是"控增量"政策的量化落地体现。<sup>[3]</sup></p>
-                        <p>对比数据：深圳同样延续"总量稳定、商品住宅缩量"基调。</p>
-                        <span class="timeline-action">信息来源：信网房产、广州规划和自然资源局</span>
+                <div class="compare-row">
+                    <div class="compare-left">
+                        <strong>优供给</strong><br>
+                        有序推动"好房子"建设<br>
+                        <span style="font-size: 11px; color: #666;">来源：[1]</span>
+                    </div>
+                    <div class="compare-center">传导</div>
+                    <div class="compare-right">
+                        <strong>好房子建设 + 标准体系</strong><br>
+                        建立"好房子"标准，创建示范小区<br>
+                        <span style="font-size: 11px; color: #666;">来源：[5]</span>
                     </div>
                 </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-phase">节点四 · 成效反馈</div>
-                    <div class="timeline-title">传导效果：市场数据验证</div>
-                    <div class="timeline-content">
-                        <p>2026年5月数据显示：上海二手房同比+22.3%（十年最高）、北京+15%（5年最高）、深圳+11%。一线城市率先"止跌回稳"，验证了政策传导的有效性。</p>
-                        <p>但同时存在挑战：政策覆盖面、执行标准统一性、地方创新边界等问题仍需优化。</p>
-                        <span class="timeline-action">数据来源：公开新闻整理</span>
+                <div class="compare-row">
+                    <div class="compare-left">
+                        <strong>深化公积金改革</strong><br>
+                        优化住房公积金使用<br>
+                        <span style="font-size: 11px; color: #666;">来源：[1]</span>
+                    </div>
+                    <div class="compare-center">自行出台</div>
+                    <div class="compare-right">
+                        <strong>公积金额度提升</strong><br>
+                        单人100万，两人200万，育儿家庭可叠加<br>
+                        <span style="font-size: 11px; color: #666;">来源：[4]</span>
+                    </div>
+                </div>
+                <div class="compare-row">
+                    <div class="compare-left">
+                        <strong>稳定市场</strong><br>
+                        促进房地产市场平稳健康发展<br>
+                        <span style="font-size: 11px; color: #666;">来源：[1]</span>
+                    </div>
+                    <div class="compare-center">成效</div>
+                    <div class="compare-right">
+                        <strong>一线城市率先回稳</strong><br>
+                        上海+22.3%，北京+15%，深圳+11%<br>
+                        <span style="font-size: 11px; color: #666;">来源：公开新闻</span>
                     </div>
                 </div>
             </div>
@@ -386,33 +452,55 @@
 
         <!-- 优化建议 -->
         <div class="case-section">
-            <h2 class="section-title"><span>03</span>优化建议：基于案例分析的政策启示</h2>
+            <h2 class="section-title"><span>03</span>优化建议：左右对照</h2>
 
-            <div class="timeline">
-                <div class="timeline-item">
-                    <div class="timeline-phase">建议一</div>
-                    <div class="timeline-title">建立政策传导"对标清单"制度</div>
-                    <div class="timeline-content">
-                        <p><strong>现状问题：</strong>全国政策多为方向性表述，如"合理安排土地供应"缺乏量化标准。</p>
-                        <p><strong>优化建议：</strong>参照广州供地计划"商品住宅用地减少58%"的量化思路，每项全国政策应配套3-5个量化指标，供地方对标执行。</p>
+            <div class="compare-section">
+                <div class="compare-header problem">
+                    <span>现状问题</span>
+                    <span>优化建议</span>
+                </div>
+                <div class="compare-row">
+                    <div class="compare-left">
+                        <strong>传导链条长，时效滞后</strong><br>
+                        全国政策发布后，地方配套文件出台平均需要30天以上，企业反映"等到配套出台，市场窗口期已过"
+                    </div>
+                    <div class="compare-center">→</div>
+                    <div class="compare-right">
+                        <strong>建立"政策预通报"机制</strong><br>
+                        国家政策制定初期提前通知地方参与研讨，成立"政策对接专班"，在正式发布前2周收到草案，提前启动配套研究
                     </div>
                 </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-phase">建议二</div>
-                    <div class="timeline-title">建立政策兼容性评估机制</div>
-                    <div class="timeline-content">
-                        <p><strong>现状问题：</strong>地方创新（如房票跨区通用）可能引发公平性质疑。</p>
-                        <p><strong>优化建议：</strong>地方创新政策出台前，应进行"兼容性评估"，从国家方向一致性、市场公平性、可执行性、风险可控性四个维度打分，超过80分方可实施。</p>
+                <div class="compare-row">
+                    <div class="compare-left">
+                        <strong>缺乏量化标准</strong><br>
+                        全国政策多为方向性表述，如"合理安排土地供应"缺乏具体数字，导致执行参差不齐
+                    </div>
+                    <div class="compare-center">→</div>
+                    <div class="compare-right">
+                        <strong>制定传导"对标清单"</strong><br>
+                        每项全国政策配套3-5个量化指标，如"商品住宅用地减少58%"，供地方对标执行，明确完成时限和考核标准
                     </div>
                 </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-phase">建议三</div>
-                    <div class="timeline-title">构建政策效果实时监测系统</div>
-                    <div class="timeline-content">
-                        <p><strong>现状问题：</strong>政策效果反馈滞后，难以动态调整。</p>
-                        <p><strong>优化建议：</strong>打通住建局、统计局、公积金中心数据壁垒，建立月度监测仪表盘，实现"政策-执行-反馈-优化"闭环。</p>
+                <div class="compare-row">
+                    <div class="compare-left">
+                        <strong>地方创新缺乏约束</strong><br>
+                        地方创新政策（如房票跨区通用）可能引发公平性质疑，缺乏事前评估机制
+                    </div>
+                    <div class="compare-center">→</div>
+                    <div class="compare-right">
+                        <strong>建立政策兼容性评估</strong><br>
+                        地方创新政策出台前，从国家方向一致性、市场公平性、可执行性、风险可控性四维评估，超过80分方可实施
+                    </div>
+                </div>
+                <div class="compare-row">
+                    <div class="compare-left">
+                        <strong>效果反馈滞后</strong><br>
+                        政策效果反馈不及时，难以动态调整，"政策-执行-反馈"闭环未形成
+                    </div>
+                    <div class="compare-center">→</div>
+                    <div class="compare-right">
+                        <strong>构建实时监测系统</strong><br>
+                        打通住建局、统计局、公积金中心数据壁垒，建立月度监测仪表盘，实现"政策-执行-反馈-优化"闭环
                     </div>
                 </div>
             </div>
