@@ -956,35 +956,6 @@
             summaryFars.innerHTML = farsHtml;
         }
 
-            // 更新右侧地图摘要
-            const summaryParams = document.getElementById('summary-params');
-            const summaryFeasible = document.getElementById('summary-feasible');
-            const summaryFars = document.getElementById('summary-fars');
-
-            summaryParams.innerHTML = `
-                <div>土地: ${landPrice}元/m²</div>
-                <div>建安: ${buildCost}元/m²</div>
-                <div>利润: ${(profitMargin*100).toFixed(0)}%</div>
-                <div>售价: ${salePrice}元/m²</div>
-            `;
-
-            summaryFeasible.textContent = `${feasibleCount}/${residentialLands.length}块`;
-
-            let farsHtml = '';
-            results.slice(0, 10).forEach(p => {
-                const reqFar = p.required_far === Infinity ? 'N/A' : p.required_far.toFixed(2);
-                const adjFar = (p.adjusted_far_by_location || 0).toFixed(2);
-                const color = p.is_feasible ? '#27ae60' : '#e74c3c';
-                farsHtml += `<div style="color:${color};margin-bottom:2px;">${p.code}: 可达${adjFar}/需${reqFar}</div>`;
-            });
-            if (results.length > 10) {
-                farsHtml += `<div style="color:#999;">+${results.length-10}块...</div>`;
-            }
-            summaryFars.innerHTML = farsHtml;
-
-            render();
-        }
-
         function initWeightEvents() {
             ['far', 'form', 'area'].forEach(key => {
                 const slider = document.getElementById('w-' + key);
