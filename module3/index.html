@@ -85,23 +85,27 @@
                 <div>• <strong>面积系数</strong>：根据地块面积分级赋值，小地块和超大地块系数较低</div>
             </div>
             <div class="formula">
-                评分 = (FAR标准化分×W1 + 形态系数×W2 + 面积系数×W3) / 总权重 × 100
+                总权重 = W1 + W2 + W3 = <span id="total-weight">100</span>%
             </div>
-            <div class="weight-row">
-                <label>容积率 FAR</label>
-                <input type="range" id="w-far" min="0" max="100" value="40">
+            <div class="weight-row" style="margin-bottom:12px;">
+                <button class="lock-btn active" id="lock-far" onclick="toggleLock('far')" style="width:24px;height:24px;background:#000;color:#fff;border:none;font-size:10px;cursor:pointer;">🔓</button>
+                <label style="flex:1;">容积率 FAR</label>
+                <input type="range" id="w-far" min="0" max="100" value="40" style="width:80px;">
                 <span class="weight-value" id="w-far-val">40</span>
             </div>
-            <div class="weight-row">
-                <label>形态系数</label>
-                <input type="range" id="w-form" min="0" max="100" value="30">
+            <div class="weight-row" style="margin-bottom:12px;">
+                <button class="lock-btn" id="lock-form" onclick="toggleLock('form')" style="width:24px;height:24px;background:#fff;color:#000;border:1px solid #000;font-size:10px;cursor:pointer;">🔒</button>
+                <label style="flex:1;">形态系数</label>
+                <input type="range" id="w-form" min="0" max="100" value="30" style="width:80px;">
                 <span class="weight-value" id="w-form-val">30</span>
             </div>
-            <div class="weight-row">
-                <label>面积系数</label>
-                <input type="range" id="w-area" min="0" max="100" value="30">
+            <div class="weight-row" style="margin-bottom:12px;">
+                <button class="lock-btn" id="lock-area" onclick="toggleLock('area')" style="width:24px;height:24px;background:#fff;color:#000;border:1px solid #000;font-size:10px;cursor:pointer;">🔒</button>
+                <label style="flex:1;">面积系数</label>
+                <input type="range" id="w-area" min="0" max="100" value="30" style="width:80px;">
                 <span class="weight-value" id="w-area-val">30</span>
             </div>
+            <div style="font-size:9px;color:#999;margin-bottom:8px;">💡 锁定某项后，调整其他项时该项权重保持不变</div>
             <button id="reset-weights" onclick="resetWeights()">RESET DEFAULT</button>
         </div>
         <div id="search"><input type="text" id="search-input" placeholder="SEARCH..."></div>
@@ -138,6 +142,7 @@
         let canvas, ctx, landData = [], bounds, scale = 1, offsetX = 0, offsetY = 0, selectedCode = null, hoveredCode = null;
         let mode = 'raw';
         let weights = { far: 40, form: 30, area: 30 };
+        let locked = { far: true, form: false, area: false }; // far默认锁定（初始状态）
 
         // FAR参考值
         const FAR_STANDARDS = {
@@ -145,6 +150,72 @@
             'YD-E1': 0.8, 'YD-E2': 0.6, 'YD-G1': 0.5, 'YD-G2': 0.3, 'YD-R2': 2.5,
             'YD-R2B1': 3.0, 'YD-S41': 0.4, 'YD-U12': 0.8
         };
+
+        function getTotalWeight() {
+            return weights.far + weights.form + weights.area;
+        }
+
+        function updateWeightDisplay() {
+            ['far', 'form', 'area'].forEach(key => {
+                document.getElementById('w-' + key).value = weights[key];
+                document.getElementById('w-' + key + '-val').textContent = weights[key];
+            });
+            document.getElementById('total-weight').textContent = getTotalWeight();
+        }
+
+        function redistributeWeight(changedKey, diff) {
+            // 计算未锁定的其他滑块的总权重
+            const otherKeys = ['far', 'form', 'area'].filter(k => k !== changedKey && !locked[k]);
+            if (otherKeys.length === 0) return;
+
+            const otherTotal = otherKeys.reduce((sum, k) => sum + weights[k], 0);
+            if (otherTotal === 0) return;
+
+            // 按比例重分配
+            otherKeys.forEach(k => {
+                const ratio = weights[k] / otherTotal;
+                const adjustment = Math.round(diff * ratio);
+                weights[k] = Math.max(0, Math.min(100, weights[k] - adjustment));
+            });
+        }
+
+        function toggleLock(key) {
+            locked[key] = !locked[key];
+            const btn = document.getElementById('lock-' + key);
+            if (locked[key]) {
+                btn.style.background = '#000';
+                btn.style.color = '#fff';
+                btn.textContent = '🔓';
+                btn.classList.add('active');
+            } else {
+                btn.style.background = '#fff';
+                btn.style.color = '#000';
+                btn.textContent = '🔒';
+                btn.classList.remove('active');
+            }
+        }
+
+        function resetWeights() {
+            weights = { far: 40, form: 30, area: 30 };
+            locked = { far: true, form: false, area: false };
+            // 重置锁按钮UI
+            ['far', 'form', 'area'].forEach(key => {
+                const btn = document.getElementById('lock-' + key);
+                if (key === 'far') {
+                    btn.style.background = '#000';
+                    btn.style.color = '#fff';
+                    btn.textContent = '🔓';
+                    btn.classList.add('active');
+                } else {
+                    btn.style.background = '#fff';
+                    btn.style.color = '#000';
+                    btn.textContent = '🔒';
+                    btn.classList.remove('active');
+                }
+            });
+            updateWeightDisplay();
+            recalculateScores();
+        }
 
         function init() {
             canvas = document.getElementById('canvas');
@@ -159,11 +230,25 @@
                 const slider = document.getElementById('w-' + key);
                 const val = document.getElementById('w-' + key + '-val');
                 slider.addEventListener('input', function() {
-                    weights[key] = parseInt(this.value);
-                    val.textContent = this.value;
+                    const newVal = parseInt(this.value);
+                    const oldVal = weights[key];
+                    weights[key] = newVal;
+                    val.textContent = newVal;
+
+                    // 如果该滑块未锁定，则重分配其他未锁定的滑块
+                    if (!locked[key]) {
+                        const diff = oldVal - newVal;
+                        redistributeWeight(key, diff);
+                    }
+
+                    updateWeightDisplay();
+                    document.getElementById('total-weight').textContent = getTotalWeight();
                     recalculateScores();
                 });
             });
+
+            // 更新显示
+            updateWeightDisplay();
 
             loadGeoJSON();
         }
@@ -229,17 +314,6 @@
             landData.sort((a, b) => b.properties.potential_score - a.properties.potential_score);
             renderList(landData);
             render();
-        }
-
-        function resetWeights() {
-            weights = { far: 40, form: 30, area: 30 };
-            document.getElementById('w-far').value = 40;
-            document.getElementById('w-form').value = 30;
-            document.getElementById('w-area').value = 30;
-            document.getElementById('w-far-val').textContent = '40';
-            document.getElementById('w-form-val').textContent = '30';
-            document.getElementById('w-area-val').textContent = '30';
-            recalculateScores();
         }
 
         function renderList(features) {
