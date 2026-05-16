@@ -600,7 +600,7 @@
                     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
                     ctx.fillText(p.code, c.x, c.y);
                 } else if (mode === 'strategy') {
-                    // 居住开发策略模式 - 居住用地高亮并显示需求容积率
+                    // 居住开发策略模式 - 居住用地高亮并显示综合容积率
                     const isResidential = (p.code || '').includes('R') || (p.layer && p.layer.includes('R'));
                     const isSelected = p.code === selectedCode;
                     const isHovered = p.code === hoveredCode;
@@ -614,17 +614,20 @@
                         ctx.fill();
                         ctx.stroke();
 
-                        // 显示所需容积率标签
+                        // 显示综合容积率标签
                         const c = toScreen(p.centroid[0],p.centroid[1]);
-                        const farText = p.required_far === Infinity ? 'N/A' : 'FAR:' + p.required_far.toFixed(1);
+                        const adjFar = p.adjusted_far_by_location || p.base_far || 0;
+                        const farText = '综合FAR:' + adjFar.toFixed(1);
                         ctx.fillStyle = '#fff';
                         ctx.font = 'bold 10px sans-serif';
                         ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
                         ctx.fillText(farText, c.x, c.y);
 
-                        // 第二行显示基准FAR
+                        // 第二行显示需要FAR
+                        const reqFarText = '需要:' + (p.required_far === Infinity ? 'N/A' : p.required_far.toFixed(1));
                         ctx.font = '9px sans-serif';
-                        ctx.fillText('基准' + (p.base_far || 0).toFixed(1), c.x, c.y + 12);
+                        ctx.fillStyle = p.is_feasible ? '#aaffaa' : '#ffaaaa';
+                        ctx.fillText(reqFarText, c.x, c.y + 12);
                     } else {
                         // 非居住用地 - 灰色
                         ctx.fillStyle = 'rgba(200,200,200,0.3)';
@@ -662,6 +665,7 @@
                 document.getElementById('weight-panel').innerHTML = getStrategyPanelHTML();
                 setTimeout(() => {
                     initStrategyEvents();
+                    calculateSpatialFactors();
                     updateStrategyAnalysis();
                 }, 100);
             } else {
@@ -763,6 +767,107 @@
             });
         }
 
+        function calculateSpatialFactors() {
+            // 找出各类设施位置
+            const metroStations = []; // 地铁站 S41
+            const parks = []; // 公园 G1
+            const publicServices = []; // 公共服务设施 A类
+            const otherLands = []; // 其他地块（用于参考位置）
+
+            landData.forEach(f => {
+                const p = f.properties;
+                const code = p.code || '';
+                const layer = p.layer || '';
+                const centroid = p.centroid || [];
+
+                if (centroid.length < 2) return;
+
+                if (layer.includes('S41') || code.includes('S41')) {
+                    metroStations.push({ centroid, name: code });
+                } else if (layer.includes('G1') || layer.includes('G2') || code.includes('G1') || code.includes('G2')) {
+                    parks.push({ centroid, name: code });
+                } else if (layer.startsWith('YD-A') || code.includes('A')) {
+                    publicServices.push({ centroid, name: code });
+                }
+                otherLands.push({ centroid, name: code, layer, area_ha: p.area_ha });
+            });
+
+            // 计算每个居住地块的空间因子
+            landData.forEach(f => {
+                const p = f.properties;
+                const code = p.code || '';
+                const layer = p.layer || '';
+                const centroid = p.centroid || [];
+
+                // 只对居住用地计算区位因子
+                if (!code.includes('R') && !layer.includes('R')) return;
+                if (centroid.length < 2) return;
+
+                let locationBonus = 1.0;
+
+                // 1. 计算到最近地铁站的距离
+                let minMetroDist = Infinity;
+                metroStations.forEach(m => {
+                    const dist = Math.sqrt(Math.pow(centroid[0] - m.centroid[0], 2) + Math.pow(centroid[1] - m.centroid[1], 2));
+                    minMetroDist = Math.min(minMetroDist, dist);
+                });
+
+                // 地铁站距离因子：500m内+0.3，1000m内+0.2，1500m内+0.1
+                if (minMetroDist < 500) {
+                    locationBonus += 0.3;
+                } else if (minMetroDist < 1000) {
+                    locationBonus += 0.2;
+                } else if (minMetroDist < 1500) {
+                    locationBonus += 0.1;
+                }
+
+                // 2. 计算到最近公园的距离
+                let minParkDist = Infinity;
+                parks.forEach(g => {
+                    const dist = Math.sqrt(Math.pow(centroid[0] - g.centroid[0], 2) + Math.pow(centroid[1] - g.centroid[1], 2));
+                    minParkDist = Math.min(minParkDist, dist);
+                });
+
+                // 公园距离因子：300m内+0.2，500m内+0.1
+                if (minParkDist < 300) {
+                    locationBonus += 0.2;
+                } else if (minParkDist < 500) {
+                    locationBonus += 0.1;
+                }
+
+                // 3. 计算到最近公共服务的距离
+                let minPublicDist = Infinity;
+                publicServices.forEach(a => {
+                    const dist = Math.sqrt(Math.pow(centroid[0] - a.centroid[0], 2) + Math.pow(centroid[1] - a.centroid[1], 2));
+                    minPublicDist = Math.min(minPublicDist, dist);
+                });
+
+                // 公共服务距离因子：500m内+0.15
+                if (minPublicDist < 500) {
+                    locationBonus += 0.15;
+                }
+
+                // 4. 面积因子：小地块可以做高密度（高层），大地块偏低（别墅/洋房）
+                const areaHa = p.area_ha || 5;
+                let areaFactor = 1.0;
+                if (areaHa < 2) {
+                    areaFactor = 1.3; // 小地块适合超高层
+                } else if (areaHa < 5) {
+                    areaFactor = 1.15; // 小地块适合高层
+                } else if (areaHa > 15) {
+                    areaFactor = 0.85; // 大地块做低密度
+                } else if (areaHa > 10) {
+                    areaFactor = 0.95; // 中等地块
+                }
+
+                p.spatial_factor = locationBonus;
+                p.area_factor = areaFactor;
+                p.min_metro_dist = minMetroDist;
+                p.min_park_dist = minParkDist;
+                p.min_public_dist = minPublicDist;
+            });
+        }
+
         function updateStrategyAnalysis() {
             const landPrice = parseInt(document.getElementById('land-price').value);
             const buildCost = parseInt(document.getElementById('build-cost').value);
@@ -780,6 +885,9 @@
                 return;
             }
 
+            // 第一步：计算所有地块的空间区位因子
+            calculateSpatialFactors();
+
             let feasibleCount = 0;
             let totalArea = 0;
             let results = [];
@@ -788,25 +896,26 @@
                 const p = f.properties;
                 const areaSqm = (p.area_ha || 0) * 10000; // 平方米
 
-                // 测算公式：
-                // 总成本 = 土地成本 + 建安成本
-                // 土地成本 = 土地价格 × 占地面积
-                // 建安成本 = 建安单价 × 建筑面积
-                // 销售总额 = 销售单价 × 建筑面积
-                // 利润 = 销售总额 - 总成本
-                // 利润率 = 利润 / 总成本
-                // 反推：required_far = 土地价格 / (销售单价 × (1 - 利润率) - 建安单价)
+                // 综合容积率 = 基准容积率 × 空间区位因子 × 形态因子 × 面积因子
+                // 空间区位因子：根据与地铁站、公园、学校等的距离计算
+                // 形态因子：形状越规整越高
+                // 面积因子：小地块可更高（高层），大地块偏低（别墅类）
+                const spatialFactor = p.spatial_factor || 1.0;
+                const shapeFactor = (p.form_factor || 0.5) * 0.3 + 0.7; // 0.5-0.85
+                const areaFactor = p.area_factor || 1.0;
 
-                // 需要的容积率（反推公式）
+                p.adjusted_far_by_location = (p.base_far || 2.5) * spatialFactor * shapeFactor * areaFactor;
+
+                // 测算公式：需要达到的容积率
                 const denominator = salePrice * (1 - profitMargin) - buildCost;
                 if (denominator <= 0) {
                     p.required_far = Infinity;
                     p.is_feasible = false;
                 } else {
-                    // 土地价格是按平方米建筑面积折算的
                     const requiredFar = landPrice / denominator;
                     p.required_far = requiredFar;
-                    p.is_feasible = requiredFar <= (p.base_far || 3.0);
+                    // 可行性判断：需要的FAR <= 综合容积率
+                    p.is_feasible = requiredFar <= p.adjusted_far_by_location;
                 }
 
                 p.land_price = landPrice;
@@ -829,9 +938,10 @@
 
             results.forEach(p => {
                 const farDisplay = p.required_far === Infinity ? '无法实现' : p.required_far.toFixed(2);
+                const adjFarDisplay = (p.adjusted_far_by_location || 0).toFixed(2);
                 const color = p.is_feasible ? '#27ae60' : '#e74c3c';
                 const symbol = p.is_feasible ? '✓' : '✗';
-                html += `<div style="margin-bottom:4px;color:${color};">${symbol} ${p.code}: 需要FAR ${farDisplay} (基准${(p.base_far||0).toFixed(1)})</div>`;
+                html += `<div style="margin-bottom:4px;color:${color};">${symbol} ${p.code}: 需要FAR ${farDisplay} / 可达FAR ${adjFarDisplay}</div>`;
             });
             html += `</div>`;
 
@@ -853,9 +963,10 @@
 
             let farsHtml = '';
             results.slice(0, 10).forEach(p => {
-                const farDisplay = p.required_far === Infinity ? 'N/A' : p.required_far.toFixed(2);
+                const reqFar = p.required_far === Infinity ? 'N/A' : p.required_far.toFixed(2);
+                const adjFar = (p.adjusted_far_by_location || 0).toFixed(2);
                 const color = p.is_feasible ? '#27ae60' : '#e74c3c';
-                farsHtml += `<div style="color:${color};margin-bottom:2px;">${p.code}: FAR ${farDisplay}</div>`;
+                farsHtml += `<div style="color:${color};margin-bottom:2px;">${p.code}: 可达${adjFar}/需${reqFar}</div>`;
             });
             if (results.length > 10) {
                 farsHtml += `<div style="color:#999;">+${results.length-10}块...</div>`;
@@ -951,12 +1062,18 @@
 
             if (mode === 'strategy' && p.required_far !== undefined) {
                 // 策略模式显示开发测算
-                document.getElementById('info-base-far').textContent = '需要FAR: ' + (p.required_far === Infinity ? '无法实现' : p.required_far.toFixed(2));
+                const adjFar = p.adjusted_far_by_location || p.base_far || 0;
+                document.getElementById('info-base-far').textContent = '综合FAR: ' + adjFar.toFixed(2);
                 document.getElementById('info-adj-far').textContent = p.is_feasible ? '✓ 可实现' : '✗ 不可实现';
                 document.getElementById('info-floor-area').textContent = '土地价格: ' + (p.land_price || '-') + ' 元/m²';
                 document.getElementById('info-form').textContent = '建安成本: ' + (p.build_cost || '-') + ' 元/m²';
                 document.getElementById('info-area-corr').textContent = '销售单价: ' + (p.sale_price || '-') + ' 元/m²';
                 document.getElementById('info-score').textContent = '利润率: ' + ((p.profit_margin || 0) * 100).toFixed(0) + '%';
+
+                // 空间因子说明
+                const spatialFactor = p.spatial_factor || 1.0;
+                const areaFactor = p.area_factor || 1.0;
+                const shapeFactor = ((p.form_factor || 0.5) * 0.3 + 0.7).toFixed(2);
 
                 // 添加详细测算
                 const potentialSection = document.getElementById('potential-section');
@@ -964,11 +1081,20 @@
                     <h3>开发可行性测算</h3>
                     <div class="pot-row"><span>地块面积</span><span class="pot-value">${p.area_ha} 公顷</span></div>
                     <div class="pot-row"><span>规划基准FAR</span><span class="pot-value">${(p.base_far || 0).toFixed(2)}</span></div>
+                    <div class="pot-row"><span>综合容积率</span><span class="pot-value" style="color:#27ae60;font-weight:bold;">${adjFar.toFixed(2)}</span></div>
                     <div class="pot-row"><span>需要FAR</span><span class="pot-value" style="color:${p.is_feasible ? '#27ae60' : '#e74c3c'};font-weight:bold;">${p.required_far === Infinity ? '无法实现' : p.required_far.toFixed(2)}</span></div>
-                    <div class="pot-row"><span>土地成本</span><span class="pot-value">${((p.area_ha * 10000 * (p.land_price || 0)) / 10000).toFixed(0)} 万元</span></div>
-                    <div class="pot-row"><span>建安成本</span><span class="pot-value">${((p.area_ha * 10000 * (p.base_far || 0) * (p.build_cost || 0)) / 10000).toFixed(0)} 万元</span></div>
-                    <div class="pot-row"><span>预计销售额</span><span class="pot-value">${((p.area_ha * 10000 * (p.base_far || 0) * (p.sale_price || 0)) / 10000).toFixed(0)} 万元</span></div>
-                    <div class="pot-row"><span>目标利润</span><span class="pot-value">${((p.profit_margin || 0) * 100).toFixed(0)}%</span></div>
+                    <div style="margin-top:8px;padding-top:8px;border-top:1px solid #ccc;font-size:9px;color:#666;">
+                        <div style="font-weight:600;margin-bottom:4px;">容积率影响因素</div>
+                        <div>区位因子: ×${spatialFactor.toFixed(2)} ${p.min_metro_dist < 1000 ? '(近地铁+)' : ''}${p.min_park_dist < 500 ? '(近公园+)' : ''}${p.min_public_dist < 500 ? '(近公服+)' : ''}</div>
+                        <div>形态因子: ×${shapeFactor} (形状${((p.form_factor || 0) * 100).toFixed(0)}%规整)</div>
+                        <div>面积因子: ×${areaFactor.toFixed(2)} (${p.area_ha < 5 ? '小地块适合高层' : p.area_ha > 10 ? '大地块适合低密度' : '中等面积'})</div>
+                    </div>
+                    <div style="margin-top:8px;padding-top:8px;border-top:1px solid #ccc;font-size:9px;color:#666;">
+                        <div style="font-weight:600;margin-bottom:4px;">成本测算</div>
+                        <div>土地成本: ${((p.area_ha * 10000 * (p.land_price || 0)) / 10000).toFixed(0)} 万元</div>
+                        <div>建安成本: ${((p.area_ha * 10000 * adjFar * (p.build_cost || 0)) / 10000).toFixed(0)} 万元</div>
+                        <div>预计销售额: ${((p.area_ha * 10000 * adjFar * (p.sale_price || 0)) / 10000).toFixed(0)} 万元</div>
+                    </div>
                 `;
             } else {
                 // 常规模式
