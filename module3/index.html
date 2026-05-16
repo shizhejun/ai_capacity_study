@@ -588,25 +588,31 @@
                     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
                     ctx.fillText(p.code, c.x, c.y);
                 } else if (mode === 'strategy') {
-                    // 居住开发策略模式 - 居住用地高亮，其他灰色
+                    // 居住开发策略模式 - 居住用地高亮并显示需求容积率
                     const isResidential = (p.code || '').includes('R') || (p.layer && p.layer.includes('R'));
                     const isSelected = p.code === selectedCode;
                     const isHovered = p.code === hoveredCode;
 
                     if (isResidential) {
-                        // 居住用地 - 红色高亮
-                        ctx.fillStyle = isSelected ? 'rgba(231,76,60,0.8)' : (isHovered ? 'rgba(231,76,60,0.6)' : 'rgba(231,76,60,0.3)');
-                        ctx.strokeStyle = isSelected ? '#c0392b' : '#e74c3c';
+                        // 居住用地 - 根据可行性着色
+                        const color = p.is_feasible ? [46, 204, 113] : [231, 76, 60];
+                        ctx.fillStyle = isSelected ? `rgba(${color[0]},${color[1]},${color[2]},0.8)` : (isHovered ? `rgba(${color[0]},${color[1]},${color[2]},0.6)` : `rgba(${color[0]},${color[1]},${color[2]},0.4)`);
+                        ctx.strokeStyle = isSelected ? (p.is_feasible ? '#27ae60' : '#c0392b') : (p.is_feasible ? '#2ecc71' : '#e74c3c');
                         ctx.lineWidth = isSelected ? 3 : 1;
                         ctx.fill();
                         ctx.stroke();
 
-                        // 显示编码标签
+                        // 显示所需容积率标签
                         const c = toScreen(p.centroid[0],p.centroid[1]);
+                        const farText = p.required_far === Infinity ? 'N/A' : 'FAR:' + p.required_far.toFixed(1);
                         ctx.fillStyle = '#fff';
-                        ctx.font = '11px sans-serif';
+                        ctx.font = 'bold 10px sans-serif';
                         ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-                        ctx.fillText(p.code, c.x, c.y);
+                        ctx.fillText(farText, c.x, c.y);
+
+                        // 第二行显示基准FAR
+                        ctx.font = '9px sans-serif';
+                        ctx.fillText('基准' + (p.base_far || 0).toFixed(1), c.x, c.y + 12);
                     } else {
                         // 非居住用地 - 灰色
                         ctx.fillStyle = 'rgba(200,200,200,0.3)';
@@ -641,6 +647,10 @@
             // 策略模式下显示分析面板
             if (m === 'strategy') {
                 document.getElementById('weight-panel').innerHTML = getStrategyPanelHTML();
+                setTimeout(() => {
+                    initStrategyEvents();
+                    updateStrategyAnalysis();
+                }, 100);
             } else {
                 // 恢复原始权重面板
                 resetWeightPanel();
@@ -694,21 +704,126 @@
             return `
                 <h3>居住开发策略分析</h3>
                 <div style="font-size:10px;color:#666;line-height:1.6;margin-bottom:12px;padding:8px;background:#fff;border-left:2px solid #e74c3c;">
-                    ⚠️ 基于现状数据和规划标准进行策略推演，实际项目需结合上位规划调整
+                    ⚠️ 基于土地成本和开发利润测算可实现容积率，实际需结合市场调整
                 </div>
                 <div style="margin-bottom:12px;">
-                    <div style="font-size:10px;font-weight:600;color:#333;margin-bottom:8px;">📊 居住用地现状统计</div>
-                    <div id="residential-stats" style="font-size:10px;color:#666;line-height:1.8;"></div>
+                    <div style="font-size:10px;font-weight:600;color:#333;margin-bottom:6px;">💰 开发成本参数</div>
+                    <div class="weight-row" style="margin-bottom:8px;">
+                        <label style="width:80px;">土地价格</label>
+                        <input type="range" id="land-price" min="1000" max="10000" value="3000" style="flex:1;">
+                        <span id="land-price-val" style="width:50px;text-align:right;font-size:10px;">3000元/m²</span>
+                    </div>
+                    <div class="weight-row" style="margin-bottom:8px;">
+                        <label style="width:80px;">建安成本</label>
+                        <input type="range" id="build-cost" min="2000" max="5000" value="3000" style="flex:1;">
+                        <span id="build-cost-val" style="width:50px;text-align:right;font-size:10px;">3000元/m²</span>
+                    </div>
+                    <div class="weight-row" style="margin-bottom:8px;">
+                        <label style="width:80px;">目标利润</label>
+                        <input type="range" id="profit-margin" min="5" max="30" value="15" style="flex:1;">
+                        <span id="profit-margin-val" style="width:50px;text-align:right;font-size:10px;">15%</span>
+                    </div>
+                    <div class="weight-row" style="margin-bottom:8px;">
+                        <label style="width:80px;">销售单价</label>
+                        <input type="range" id="sale-price" min="5000" max="30000" value="15000" style="flex:1;">
+                        <span id="sale-price-val" style="width:50px;text-align:right;font-size:10px;">15000元/m²</span>
+                    </div>
                 </div>
                 <div style="margin-bottom:12px;">
-                    <div style="font-size:10px;font-weight:600;color:#333;margin-bottom:8px;">🎯 建议指标范围</div>
-                    <div id="suggested-indicators" style="font-size:10px;color:#666;line-height:1.8;"></div>
+                    <div style="font-size:10px;font-weight:600;color:#333;margin-bottom:6px;">📊 居住用地分析结果</div>
+                    <div id="strategy-results" style="font-size:10px;color:#666;line-height:1.6;"></div>
                 </div>
-                <div>
-                    <div style="font-size:10px;font-weight:600;color:#333;margin-bottom:8px;">💡 开发策略建议</div>
-                    <div id="strategy-suggestions" style="font-size:10px;color:#666;line-height:1.8;"></div>
-                </div>
+                <div style="font-size:9px;color:#999;">💡 点击地图上各地块查看详细测算</div>
             `;
+        }
+
+        function initStrategyEvents() {
+            const params = ['land-price', 'build-cost', 'profit-margin', 'sale-price'];
+            params.forEach(id => {
+                const input = document.getElementById(id);
+                const val = document.getElementById(id + '-val');
+                if (!input || !val) return;
+                input.addEventListener('input', function() {
+                    val.textContent = this.value + (id === 'profit-margin' ? '%' : '元/m²');
+                    updateStrategyAnalysis();
+                });
+            });
+        }
+
+        function updateStrategyAnalysis() {
+            const landPrice = parseInt(document.getElementById('land-price').value);
+            const buildCost = parseInt(document.getElementById('build-cost').value);
+            const profitMargin = parseInt(document.getElementById('profit-margin').value) / 100;
+            const salePrice = parseInt(document.getElementById('sale-price').value);
+
+            // 筛选居住用地
+            const residentialLands = landData.filter(f => {
+                const code = f.properties.code || '';
+                return code.includes('R') || (f.properties.layer && f.properties.layer.includes('R'));
+            });
+
+            if (residentialLands.length === 0) {
+                document.getElementById('strategy-results').innerHTML = '未检测到居住用地';
+                return;
+            }
+
+            let feasibleCount = 0;
+            let totalArea = 0;
+            let results = [];
+
+            residentialLands.forEach(f => {
+                const p = f.properties;
+                const areaSqm = (p.area_ha || 0) * 10000; // 平方米
+
+                // 测算公式：
+                // 总成本 = 土地成本 + 建安成本
+                // 土地成本 = 土地价格 × 占地面积
+                // 建安成本 = 建安单价 × 建筑面积
+                // 销售总额 = 销售单价 × 建筑面积
+                // 利润 = 销售总额 - 总成本
+                // 利润率 = 利润 / 总成本
+                // 反推：required_far = 土地价格 / (销售单价 × (1 - 利润率) - 建安单价)
+
+                // 需要的容积率（反推公式）
+                const denominator = salePrice * (1 - profitMargin) - buildCost;
+                if (denominator <= 0) {
+                    p.required_far = Infinity;
+                    p.is_feasible = false;
+                } else {
+                    // 土地价格是按平方米建筑面积折算的
+                    const requiredFar = landPrice / denominator;
+                    p.required_far = requiredFar;
+                    p.is_feasible = requiredFar <= (p.base_far || 3.0);
+                }
+
+                p.land_price = landPrice;
+                p.build_cost = buildCost;
+                p.profit_margin = profitMargin;
+                p.sale_price = salePrice;
+
+                totalArea += areaSqm;
+                if (p.is_feasible) feasibleCount++;
+                results.push(p);
+            });
+
+            // 排序：按需要的容积率从低到高（越容易实现的排前面）
+            results.sort((a, b) => (a.required_far === Infinity ? 999 : a.required_far) - (b.required_far === Infinity ? 999 : b.required_far));
+
+            let html = `居住用地: ${residentialLands.length}块<br>`;
+            html += `总面积: ${(totalArea/10000).toFixed(2)}公顷<br>`;
+            html += `可实现项目: ${feasibleCount}/${residentialLands.length}块<br>`;
+            html += `<div style="margin-top:8px;">`;
+
+            results.forEach(p => {
+                const farDisplay = p.required_far === Infinity ? '无法实现' : p.required_far.toFixed(2);
+                const color = p.is_feasible ? '#27ae60' : '#e74c3c';
+                const symbol = p.is_feasible ? '✓' : '✗';
+                html += `<div style="margin-bottom:4px;color:${color};">${symbol} ${p.code}: 需要FAR ${farDisplay} (基准${(p.base_far||0).toFixed(1)})</div>`;
+            });
+            html += `</div>`;
+
+            document.getElementById('strategy-results').innerHTML = html;
+            render();
         }
 
         function initWeightEvents() {
@@ -794,12 +909,52 @@
             document.getElementById('info-code').textContent = p.code;
             document.getElementById('info-layer').textContent = getLandUseName(p.layer || p.code);
             document.getElementById('info-area').textContent = p.area_ha + ' 公顷';
-            document.getElementById('info-base-far').textContent = p.base_far || '-';
-            document.getElementById('info-adj-far').textContent = p.adjusted_far ? p.adjusted_far.toFixed(2) : '-';
-            document.getElementById('info-floor-area').textContent = p.adjusted_far ? (p.area_ha * 10000 * p.adjusted_far / 10000).toFixed(2) + ' 万m²' : '-';
-            document.getElementById('info-form').textContent = p.form_factor ? p.form_factor.toFixed(3) : '-';
-            document.getElementById('info-area-corr').textContent = p.area_correction ? p.area_correction.toFixed(2) : '-';
-            document.getElementById('info-score').textContent = p.potential_score + ' 分';
+
+            if (mode === 'strategy' && p.required_far !== undefined) {
+                // 策略模式显示开发测算
+                document.getElementById('info-base-far').textContent = '需要FAR: ' + (p.required_far === Infinity ? '无法实现' : p.required_far.toFixed(2));
+                document.getElementById('info-adj-far').textContent = p.is_feasible ? '✓ 可实现' : '✗ 不可实现';
+                document.getElementById('info-floor-area').textContent = '土地价格: ' + (p.land_price || '-') + ' 元/m²';
+                document.getElementById('info-form').textContent = '建安成本: ' + (p.build_cost || '-') + ' 元/m²';
+                document.getElementById('info-area-corr').textContent = '销售单价: ' + (p.sale_price || '-') + ' 元/m²';
+                document.getElementById('info-score').textContent = '利润率: ' + ((p.profit_margin || 0) * 100).toFixed(0) + '%';
+
+                // 添加详细测算
+                const potentialSection = document.getElementById('potential-section');
+                potentialSection.innerHTML = `
+                    <h3>开发可行性测算</h3>
+                    <div class="pot-row"><span>地块面积</span><span class="pot-value">${p.area_ha} 公顷</span></div>
+                    <div class="pot-row"><span>规划基准FAR</span><span class="pot-value">${(p.base_far || 0).toFixed(2)}</span></div>
+                    <div class="pot-row"><span>需要FAR</span><span class="pot-value" style="color:${p.is_feasible ? '#27ae60' : '#e74c3c'};font-weight:bold;">${p.required_far === Infinity ? '无法实现' : p.required_far.toFixed(2)}</span></div>
+                    <div class="pot-row"><span>土地成本</span><span class="pot-value">${((p.area_ha * 10000 * (p.land_price || 0)) / 10000).toFixed(0)} 万元</span></div>
+                    <div class="pot-row"><span>建安成本</span><span class="pot-value">${((p.area_ha * 10000 * (p.base_far || 0) * (p.build_cost || 0)) / 10000).toFixed(0)} 万元</span></div>
+                    <div class="pot-row"><span>预计销售额</span><span class="pot-value">${((p.area_ha * 10000 * (p.base_far || 0) * (p.sale_price || 0)) / 10000).toFixed(0)} 万元</span></div>
+                    <div class="pot-row"><span>目标利润</span><span class="pot-value">${((p.profit_margin || 0) * 100).toFixed(0)}%</span></div>
+                `;
+            } else {
+                // 常规模式
+                document.getElementById('info-base-far').textContent = p.base_far || '-';
+                document.getElementById('info-adj-far').textContent = p.adjusted_far ? p.adjusted_far.toFixed(2) : '-';
+                document.getElementById('info-floor-area').textContent = p.adjusted_far ? (p.area_ha * 10000 * p.adjusted_far / 10000).toFixed(2) + ' 万m²' : '-';
+                document.getElementById('info-form').textContent = p.form_factor ? p.form_factor.toFixed(3) : '-';
+                document.getElementById('info-area-corr').textContent = p.area_correction ? p.area_correction.toFixed(2) : '-';
+                document.getElementById('info-score').textContent = p.potential_score + ' 分';
+
+                // 恢复原始INDICATORS
+                const potentialSection = document.getElementById('potential-section');
+                potentialSection.innerHTML = `
+                    <h3>INDICATORS</h3>
+                    <div class="pot-row"><span>基本容积率(FAR)</span><span class="pot-value" id="info-base-far">-</span></div>
+                    <div class="pot-row"><span>调整容积率</span><span class="pot-value" id="info-adj-far">-</span></div>
+                    <div class="pot-row" style="font-size:9px;color:#999;margin-bottom:8px;">基准容积率×形态系数×面积系数</div>
+                    <div class="pot-row"><span>最大建筑面积</span><span class="pot-value" id="info-floor-area">-</span></div>
+                    <div class="pot-row"><span>形态系数</span><span class="pot-value" id="info-form">-</span></div>
+                    <div class="pot-row" style="font-size:9px;color:#999;margin-bottom:8px;">形状紧凑度(0-1)，越接近1越规整</div>
+                    <div class="pot-row"><span>面积系数</span><span class="pot-value" id="info-area-corr">-</span></div>
+                    <div class="pot-row" style="font-size:9px;color:#999;margin-bottom:8px;">按面积分级赋值(0.6-1.0)</div>
+                    <div class="pot-row" style="margin-top:12px;padding-top:12px;border-top:1px solid #ccc;"><span>开发潜力评分</span><span class="pot-value" id="info-score">-</span></div>
+                `;
+            }
             document.getElementById('info-panel').classList.add('show');
         }
 
