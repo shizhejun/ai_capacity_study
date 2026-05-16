@@ -877,16 +877,34 @@
 
                 if (centroid.length < 2) return;
 
+                // 地铁站
                 if (layer.includes('S41') || code.includes('S41')) {
                     refMetroStations.push(centroid);
-                    refMetroNames.push(code);
-                } else if (layer.includes('G1') || layer.includes('G2')) {
-                    refParks.push(centroid);
-                    refParkNames.push(code);
-                } else if (layer.startsWith('YD-A')) {
-                    refPublicServices.push(centroid);
-                    refPublicNames.push(code);
+                    refMetroNames.push('S41-公交场站');
                 }
+                // 公园绿地和防护绿地
+                else if (layer.includes('G1') || code.includes('G1')) {
+                    refParks.push(centroid);
+                    refParkNames.push('G1-公园绿地');
+                } else if (layer.includes('G2') || code.includes('G2')) {
+                    refParks.push(centroid);
+                    refParkNames.push('G2-防护绿地');
+                }
+                // 公服设施：仅限A1行政办公、A2文化设施、A5医疗卫生、A6社会福利
+                else if (layer.includes('A1') || code.includes('A1')) {
+                    refPublicServices.push(centroid);
+                    refPublicNames.push('A1-行政办公');
+                } else if (layer.includes('A2') || code.includes('A2')) {
+                    refPublicServices.push(centroid);
+                    refPublicNames.push('A2-文化设施');
+                } else if (layer.includes('A5') || code.includes('A5')) {
+                    refPublicServices.push(centroid);
+                    refPublicNames.push('A5-医疗卫生');
+                } else if (layer.includes('A6') || code.includes('A6')) {
+                    refPublicServices.push(centroid);
+                    refPublicNames.push('A6-社会福利');
+                }
+                // A3(教育科研)、A4(体育)、A7(文物)、A33(中小学)等不算公服
             });
 
             landData.forEach(f => {
@@ -1192,9 +1210,9 @@
                     <div class="pot-row"><span>可行性</span><span class="pot-value" style="color:${p.is_feasible ? '#27ae60' : '#e74c3c'};font-weight:bold;">${p.is_feasible ? '✓ 可实现' : '✗ 需调整'}</span></div>
                     <div style="margin-top:8px;padding-top:8px;border-top:1px solid #ccc;font-size:9px;color:#666;">
                         <div style="font-weight:600;margin-bottom:4px;">禀赋来源</div>
-                        <div>地铁: ${p.min_metro_dist < 500 ? '+30分' : p.min_metro_dist < 1000 ? '+20分' : p.min_metro_dist < 1500 ? '+10分' : '0分'} (${(p.min_metro_dist||0).toFixed(0)}m)</div>
-                        <div>公园: ${p.min_park_dist < 300 ? '+20分' : p.min_park_dist < 500 ? '+10分' : '0分'} (${(p.min_park_dist||0).toFixed(0)}m)</div>
-                        <div>公服: ${p.min_public_dist < 500 ? '+15分' : '0分'} (${(p.min_public_dist||0).toFixed(0)}m)</div>
+                        <div>${p.min_metro_dist < 500 ? '+30分' : p.min_metro_dist < 1000 ? '+20分' : p.min_metro_dist < 1500 ? '+10分' : '0分'} 地铁 (${(p.min_metro_dist||0).toFixed(0)}m)${p.nearest_metro_idx >= 0 && refMetroNames[p.nearest_metro_idx] ? ' - ' + refMetroNames[p.nearest_metro_idx] : ''}</div>
+                        <div>${p.min_park_dist < 300 ? '+20分' : p.min_park_dist < 500 ? '+10分' : '0分'} 公园 (${(p.min_park_dist||0).toFixed(0)}m)${p.nearest_park_idx >= 0 && refParkNames[p.nearest_park_idx] ? ' - ' + refParkNames[p.nearest_park_idx] : ''}</div>
+                        <div>${p.min_public_dist < 500 ? '+15分' : '0分'} 公服 (${(p.min_public_dist||0).toFixed(0)}m)${p.nearest_public_idx >= 0 && refPublicNames[p.nearest_public_idx] ? ' - ' + refPublicNames[p.nearest_public_idx] : ''}</div>
                         <div>形态: +${((p.form_factor||0) * 15).toFixed(0)}分 (${((p.form_factor||0)*100).toFixed(0)}%规整)</div>
                         <div>面积: ${p.area_ha >= 5 && p.area_ha <= 15 ? '+10分' : p.area_ha > 15 ? '+5分' : '-5分'} (${p.area_ha.toFixed(1)}公顷)</div>
                     </div>
