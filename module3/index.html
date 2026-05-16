@@ -11,8 +11,8 @@
         #sidebar { width: 340px; background: #fafafa; border-right: 1px solid #ddd; display: flex; flex-direction: column; overflow: hidden; }
         #sidebar-header { padding: 20px 16px; background: #fff; border-bottom: 1px solid #ddd; }
         #sidebar-header h1 { font-size: 13px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #000; }
-        #mode-toggle { padding: 16px; display: flex; gap: 8px; border-bottom: 1px solid #ddd; }
-        #mode-toggle button { flex: 1; padding: 10px; background: #fff; border: 1px solid #000; color: #000; font-size: 11px; letter-spacing: 1px; cursor: pointer; transition: all 0.2s; }
+        #mode-toggle { padding: 16px; display: flex; gap: 8px; border-bottom: 1px solid #ddd; flex-wrap: wrap; }
+        #mode-toggle button { flex: 1 1 45%; padding: 10px; background: #fff; border: 1px solid #000; color: #000; font-size: 11px; letter-spacing: 1px; cursor: pointer; transition: all 0.2s; min-width: 140px; }
         #mode-toggle button.active { background: #000; color: #fff; }
         #weight-panel { padding: 16px; border-bottom: 1px solid #ddd; }
         #weight-panel h3 { font-size: 10px; color: #666; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
@@ -72,6 +72,7 @@
             <button onclick="setMode('raw')" class="active" id="btn-raw">原始用地图</button>
             <button onclick="setMode('ai-search')" id="btn-ai">AI辅助编码</button>
             <button onclick="setMode('potential')" id="btn-potential">个性化规则</button>
+            <button onclick="setMode('strategy')" id="btn-strategy">居住开发策略</button>
         </div>
         <div id="weight-panel">
             <h3>评分规则说明</h3>
@@ -122,9 +123,12 @@
                 <h3>INDICATORS</h3>
                 <div class="pot-row"><span>基本容积率(FAR)</span><span class="pot-value" id="info-base-far">-</span></div>
                 <div class="pot-row"><span>调整容积率</span><span class="pot-value" id="info-adj-far">-</span></div>
+                <div class="pot-row" style="font-size:9px;color:#999;margin-bottom:8px;">基准容积率×形态系数×面积系数</div>
                 <div class="pot-row"><span>最大建筑面积</span><span class="pot-value" id="info-floor-area">-</span></div>
                 <div class="pot-row"><span>形态系数</span><span class="pot-value" id="info-form">-</span></div>
+                <div class="pot-row" style="font-size:9px;color:#999;margin-bottom:8px;">形状紧凑度(0-1)，越接近1越规整</div>
                 <div class="pot-row"><span>面积系数</span><span class="pot-value" id="info-area-corr">-</span></div>
+                <div class="pot-row" style="font-size:9px;color:#999;margin-bottom:8px;">按面积分级赋值(0.6-1.0)</div>
                 <div class="pot-row" style="margin-top:12px;padding-top:12px;border-top:1px solid #ccc;"><span>开发潜力评分</span><span class="pot-value" id="info-score">-</span></div>
             </div>
         </div>
@@ -466,6 +470,24 @@
                 return;
             }
 
+            // 策略模式 - 显示分析结果
+            if (mode === 'strategy') {
+                const analysis = analyzeResidentialStrategy();
+                document.getElementById('residential-stats').innerHTML = analysis.stats;
+                document.getElementById('suggested-indicators').innerHTML = analysis.indicators;
+                document.getElementById('strategy-suggestions').innerHTML = analysis.suggestions;
+
+                // 地图上高亮居住用地
+                list.innerHTML = `
+                    <div style="padding:16px;font-size:11px;color:#666;">
+                        <div style="font-weight:600;margin-bottom:8px;color:#000;">居住用地分布</div>
+                        <div style="margin-bottom:8px;">图中 <span style="background:#e74c3c;padding:2px 6px;color:#fff;">红色</span> 高亮区域为居住用地</div>
+                        <div>点击地块可查看详细信息和开发建议</div>
+                    </div>
+                `;
+                return;
+            }
+
             // AI辅助编码和个性化规则模式 - 显示地块列表
             features.forEach(f => {
                 const p = f.properties;
@@ -565,6 +587,34 @@
                     ctx.font = '11px sans-serif';
                     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
                     ctx.fillText(p.code, c.x, c.y);
+                } else if (mode === 'strategy') {
+                    // 居住开发策略模式 - 居住用地高亮，其他灰色
+                    const isResidential = (p.code || '').includes('R') || (p.layer && p.layer.includes('R'));
+                    const isSelected = p.code === selectedCode;
+                    const isHovered = p.code === hoveredCode;
+
+                    if (isResidential) {
+                        // 居住用地 - 红色高亮
+                        ctx.fillStyle = isSelected ? 'rgba(231,76,60,0.8)' : (isHovered ? 'rgba(231,76,60,0.6)' : 'rgba(231,76,60,0.3)');
+                        ctx.strokeStyle = isSelected ? '#c0392b' : '#e74c3c';
+                        ctx.lineWidth = isSelected ? 3 : 1;
+                        ctx.fill();
+                        ctx.stroke();
+
+                        // 显示编码标签
+                        const c = toScreen(p.centroid[0],p.centroid[1]);
+                        ctx.fillStyle = '#fff';
+                        ctx.font = '11px sans-serif';
+                        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                        ctx.fillText(p.code, c.x, c.y);
+                    } else {
+                        // 非居住用地 - 灰色
+                        ctx.fillStyle = 'rgba(200,200,200,0.3)';
+                        ctx.strokeStyle = '#ccc';
+                        ctx.lineWidth = 1;
+                        ctx.fill();
+                        ctx.stroke();
+                    }
                 } else {
                     // 原始用地图模式 - 仅显示用地类型颜色，无标签，无交互
                     const colorMap = {1:[255,0,0],2:[255,255,0],3:[0,255,0],4:[0,255,255],7:[255,255,255],13:[255,0,255],30:[255,165,0],94:[144,238,144],111:[255,192,203],152:[221,160,221],211:[135,206,235],254:[0,0,0]};
@@ -583,11 +633,153 @@
             document.getElementById('btn-raw').classList.toggle('active', m==='raw');
             document.getElementById('btn-ai').classList.toggle('active', m==='ai-search');
             document.getElementById('btn-potential').classList.toggle('active', m==='potential');
+            document.getElementById('btn-strategy').classList.toggle('active', m==='strategy');
             document.getElementById('legend').style.display = m==='potential' ? 'block' : 'none';
-            document.getElementById('weight-panel').style.display = m==='potential' ? 'block' : 'none';
+            document.getElementById('weight-panel').style.display = (m==='potential' || m==='strategy') ? 'block' : 'none';
             document.getElementById('search').style.display = m==='raw' ? 'none' : 'block';
+
+            // 策略模式下显示分析面板
+            if (m === 'strategy') {
+                document.getElementById('weight-panel').innerHTML = getStrategyPanelHTML();
+            } else {
+                // 恢复原始权重面板
+                resetWeightPanel();
+            }
+
             resizeCanvas();
             renderList(landData);
+        }
+
+        function resetWeightPanel() {
+            document.getElementById('weight-panel').innerHTML = `
+                <h3>评分规则说明</h3>
+                <div style="font-size:10px;color:#666;line-height:1.6;margin-bottom:12px;padding:8px;background:#fff;border-left:2px solid #e74c3c;">
+                    ⚠️ 以下评分规则仅为试验目的，实际项目需结合专业分析设定评分标准
+                </div>
+                <div style="font-size:10px;color:#333;line-height:1.8;margin-bottom:12px;">
+                    <div style="font-weight:600;margin-bottom:6px;">指标说明：</div>
+                    <div>• <strong>FAR标准化分</strong>：容积率（地块面积×容积率）与同类用地基准值的比值，反映开发强度</div>
+                    <div>• <strong>形态系数</strong>：地块形状紧凑度（0-1），越接近1表示形状越规整，越有利于开发</div>
+                    <div>• <strong>面积系数</strong>：根据地块面积分级赋值，小地块和超大地块系数较低</div>
+                </div>
+                <div class="formula">
+                    总权重 = W1 + W2 + W3 = <span id="total-weight">100</span>%
+                </div>
+                <div class="weight-row" style="margin-bottom:12px;">
+                    <button class="lock-btn active" id="lock-far" onclick="toggleLock('far')" style="width:24px;height:24px;background:#000;color:#fff;border:none;font-size:10px;cursor:pointer;">🔓</button>
+                    <label style="flex:1;">容积率 FAR</label>
+                    <input type="range" id="w-far" min="0" max="100" value="40" style="width:80px;">
+                    <span class="weight-value" id="w-far-val">40</span>
+                </div>
+                <div class="weight-row" style="margin-bottom:12px;">
+                    <button class="lock-btn" id="lock-form" onclick="toggleLock('form')" style="width:24px;height:24px;background:#fff;color:#000;border:1px solid #000;font-size:10px;cursor:pointer;">🔒</button>
+                    <label style="flex:1;">形态系数</label>
+                    <input type="range" id="w-form" min="0" max="100" value="30" style="width:80px;">
+                    <span class="weight-value" id="w-form-val">30</span>
+                </div>
+                <div class="weight-row" style="margin-bottom:12px;">
+                    <button class="lock-btn" id="lock-area" onclick="toggleLock('area')" style="width:24px;height:24px;background:#fff;color:#000;border:1px solid #000;font-size:10px;cursor:pointer;">🔒</button>
+                    <label style="flex:1;">面积系数</label>
+                    <input type="range" id="w-area" min="0" max="100" value="30" style="width:80px;">
+                    <span class="weight-value" id="w-area-val">30</span>
+                </div>
+                <div style="font-size:9px;color:#999;margin-bottom:8px;">💡 锁定某项后，调整其他项时该项权重保持不变</div>
+                <button id="reset-weights" onclick="resetWeights()">RESET DEFAULT</button>
+            `;
+            // 重新绑定事件
+            initWeightEvents();
+        }
+
+        function getStrategyPanelHTML() {
+            return `
+                <h3>居住开发策略分析</h3>
+                <div style="font-size:10px;color:#666;line-height:1.6;margin-bottom:12px;padding:8px;background:#fff;border-left:2px solid #e74c3c;">
+                    ⚠️ 基于现状数据和规划标准进行策略推演，实际项目需结合上位规划调整
+                </div>
+                <div style="margin-bottom:12px;">
+                    <div style="font-size:10px;font-weight:600;color:#333;margin-bottom:8px;">📊 居住用地现状统计</div>
+                    <div id="residential-stats" style="font-size:10px;color:#666;line-height:1.8;"></div>
+                </div>
+                <div style="margin-bottom:12px;">
+                    <div style="font-size:10px;font-weight:600;color:#333;margin-bottom:8px;">🎯 建议指标范围</div>
+                    <div id="suggested-indicators" style="font-size:10px;color:#666;line-height:1.8;"></div>
+                </div>
+                <div>
+                    <div style="font-size:10px;font-weight:600;color:#333;margin-bottom:8px;">💡 开发策略建议</div>
+                    <div id="strategy-suggestions" style="font-size:10px;color:#666;line-height:1.8;"></div>
+                </div>
+            `;
+        }
+
+        function initWeightEvents() {
+            ['far', 'form', 'area'].forEach(key => {
+                const slider = document.getElementById('w-' + key);
+                const val = document.getElementById('w-' + key + '-val');
+                if (!slider || !val) return;
+                slider.addEventListener('input', function() {
+                    if (locked[key]) return;
+                    let newVal = parseInt(this.value);
+                    const oldVal = weights[key];
+                    const lockedTotal = (locked.far ? weights.far : 0) + (locked.form ? weights.form : 0) + (locked.area ? weights.area : 0);
+                    const otherUnlockedTotal = ['far', 'form', 'area'].filter(k => k !== key && !locked[k]).reduce((sum, k) => sum + weights[k], 0);
+                    const maxAllowed = 100 - lockedTotal - otherUnlockedTotal + oldVal;
+                    newVal = Math.min(newVal, maxAllowed);
+                    this.value = newVal;
+                    weights[key] = newVal;
+                    val.textContent = newVal;
+                    if (!locked[key]) {
+                        const diff = oldVal - newVal;
+                        redistributeWeight(key, diff);
+                    }
+                    updateWeightDisplay();
+                    document.getElementById('total-weight').textContent = getTotalWeight();
+                    recalculateScores();
+                });
+            });
+        }
+
+        function analyzeResidentialStrategy() {
+            // 筛选居住用地
+            const residentialLands = landData.filter(f => {
+                const code = f.properties.code || '';
+                return code.includes('R') || (f.properties.layer && f.properties.layer.includes('R'));
+            });
+
+            if (residentialLands.length === 0) {
+                return {
+                    stats: '未检测到居住用地',
+                    indicators: 'N/A',
+                    suggestions: 'N/A'
+                };
+            }
+
+            // 统计
+            const totalArea = residentialLands.reduce((sum, f) => sum + (f.properties.area_ha || 0), 0);
+            const avgFar = residentialLands.reduce((sum, f) => sum + (f.properties.base_far || 0), 0) / residentialLands.length;
+            const avgForm = residentialLands.reduce((sum, f) => sum + (f.properties.form_factor || 0), 0) / residentialLands.length;
+
+            // 建议指标（依据GB50137-2011和实际经验）
+            const suggestedFar = totalArea < 5 ? '2.0-2.5' : totalArea < 15 ? '2.5-3.0' : '3.0-3.5';
+            const suggestedDensity = totalArea < 5 ? '30%-35%' : totalArea < 15 ? '25%-30%' : '20%-25%';
+            const suggestedGreen = '30%-35%';
+
+            const suggestions = [];
+            if (avgForm < 0.6) {
+                suggestions.push('• 形态系数偏低，建议整合零散地块，提高连片开发可能性');
+            }
+            if (totalArea > 10) {
+                suggestions.push('• 居住用地规模较大，可考虑分期开发，优先启动配套成熟区域');
+            }
+            if (avgFar < 2.0) {
+                suggestions.push('• 平均容积率偏低，可适当提高开发强度以实现土地集约利用');
+            }
+            suggestions.push('• 建议配建公共服务设施，按照《城市居住区规划设计标准》配置');
+
+            return {
+                stats: `居住用地块数: ${residentialLands.length}块<br>总面积: ${totalArea.toFixed(2)}公顷<br>平均基准容积率: ${avgFar.toFixed(2)}<br>平均形态系数: ${avgForm.toFixed(2)}`,
+                indicators: `容积率(FAR): ${suggestedFar}<br>建筑密度: ${suggestedDensity}<br>绿地率: ${suggestedGreen}<br>配套公服设施: 按《城市居住区规划设计标准》`,
+                suggestions: suggestions.join('<br>')
+            };
         }
 
         function selectLand(code) {
