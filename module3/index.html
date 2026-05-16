@@ -404,6 +404,7 @@
 
             // 更新显示
             updateWeightDisplay();
+            setMode(mode); // 初始化UI
 
             loadGeoJSON();
         }
@@ -475,29 +476,9 @@
             const list = document.getElementById('list');
             list.innerHTML = '';
 
-            // 原始用地图模式 - 显示步骤说明
+            // 原始用地图模式 - 左侧面板为空
             if (mode === 'raw') {
-                list.innerHTML = `
-                    <div style="padding:20px;font-size:13px;line-height:2;color:#666;">
-                        <div style="font-weight:600;margin-bottom:12px;">原始数据导入流程</div>
-                        <div style="margin-bottom:16px;">
-                            <span style="background:#000;color:#fff;padding:2px 8px;font-size:11px;margin-right:8px;">步骤1</span>
-                            <span>获取原始DWG格式用地数据</span>
-                        </div>
-                        <div style="margin-bottom:16px;">
-                            <span style="background:#000;color:#fff;padding:2px 8px;font-size:11px;margin-right:8px;">步骤2</span>
-                            <span>解析DWG中的地块边界线</span>
-                        </div>
-                        <div style="margin-bottom:16px;">
-                            <span style="background:#000;color:#fff;padding:2px 8px;font-size:11px;margin-right:8px;">步骤3</span>
-                            <span>提取地块属性（类型、面积等）</span>
-                        </div>
-                        <div>
-                            <span style="background:#000;color:#fff;padding:2px 8px;font-size:11px;margin-right:8px;">步骤4</span>
-                            <span>转换为网页可展示的矢量数据</span>
-                        </div>
-                    </div>
-                `;
+                list.innerHTML = '';
                 return;
             }
 
@@ -750,24 +731,49 @@
             document.getElementById('btn-strategy').classList.toggle('active', m==='strategy');
             document.getElementById('legend').style.display = m==='potential' ? 'block' : 'none';
             document.getElementById('strategy-summary').style.display = m==='strategy' ? 'block' : 'none';
-            document.getElementById('weight-panel').style.display = (m==='potential' || m==='strategy') ? 'block' : 'none';
             document.getElementById('search').style.display = m==='raw' ? 'none' : 'block';
 
-// 策略模式下显示分析面板
+            // 先清空所有模式的内容
+            document.getElementById('weight-panel').innerHTML = '';
+            document.getElementById('weight-panel').style.display = 'none';
+
+// 根据模式设置权重面板内容
             if (m === 'strategy') {
+                // 策略模式 - 显示成本参数
+                document.getElementById('weight-panel').style.display = 'block';
                 document.getElementById('weight-panel').innerHTML = getStrategyPanelHTML();
                 setTimeout(() => {
                     initStrategyEvents();
                     calculateQualityScore();
                     updateStrategyAnalysis();
+                    renderList(landData);
                 }, 100);
-            } else {
-                // 恢复原始权重面板
+            } else if (m === 'potential') {
+                // 个性化规则模式 - 显示评分规则
+                document.getElementById('weight-panel').style.display = 'block';
                 resetWeightPanel();
+            } else if (m === 'ai-search') {
+                // AI辅助编码模式 - 显示导入流程
+                document.getElementById('weight-panel').style.display = 'block';
+                document.getElementById('weight-panel').innerHTML = `
+                    <div style="padding:12px;font-size:11px;line-height:1.8;color:#666;">
+                        <div style="font-weight:600;margin-bottom:8px;">原始数据导入流程</div>
+                        <div>1. 获取DWG格式用地数据</div>
+                        <div>2. 解析地块边界线</div>
+                        <div>3. 提取地块属性（类型、面积等）</div>
+                        <div>4. 转换为矢量数据</div>
+                        <div style="margin-top:12px;padding-top:8px;border-top:1px solid #ddd;">
+                            💡 点击各地块查看编码和属性
+                        </div>
+                    </div>
+                `;
+            }
+            // 原始用地图模式: 清空左侧列表
+            if (m === 'raw') {
+                document.getElementById('list').innerHTML = '';
             }
 
             resizeCanvas();
-            renderList(landData);
         }
 
         function resetWeightPanel() {
@@ -839,7 +845,7 @@
                         <span id="sale-price-val" style="width:55px;text-align:right;font-size:10px;">15000元/m²</span>
                     </div>
                 </div>
-                
+
             `;
         }
 
@@ -1109,27 +1115,45 @@
         }
 
         function initWeightEvents() {
+            // 移除旧的监听器
+            ['far', 'form', 'area'].forEach(key => {
+                const slider = document.getElementById('w-' + key);
+                if (slider) {
+                    const newSlider = slider.cloneNode(true);
+                    slider.parentNode.replaceChild(newSlider, slider);
+                }
+            });
+
+            // 重新绑定事件
             ['far', 'form', 'area'].forEach(key => {
                 const slider = document.getElementById('w-' + key);
                 const val = document.getElementById('w-' + key + '-val');
                 if (!slider || !val) return;
                 slider.addEventListener('input', function() {
                     if (locked[key]) return;
-                    let newVal = parseInt(this.value);
-                    const oldVal = weights[key];
-                    const lockedTotal = (locked.far ? weights.far : 0) + (locked.form ? weights.form : 0) + (locked.area ? weights.area : 0);
-                    const otherUnlockedTotal = ['far', 'form', 'area'].filter(k => k !== key && !locked[k]).reduce((sum, k) => sum + weights[k], 0);
-                    const maxAllowed = 100 - lockedTotal - otherUnlockedTotal + oldVal;
-                    newVal = Math.min(newVal, maxAllowed);
-                    this.value = newVal;
+                    const newVal = parseInt(this.value);
                     weights[key] = newVal;
                     val.textContent = newVal;
-                    if (!locked[key]) {
-                        const diff = oldVal - newVal;
-                        redistributeWeight(key, diff);
+
+                    // 确保总权重为100
+                    const total = weights.far + weights.form + weights.area;
+                    if (total !== 100) {
+                        const diff = 100 - total; // 正数表示需要增加，负数表示需要减少
+                        const otherKeys = ['far', 'form', 'area'].filter(k => k !== key && !locked[k]);
+
+                        if (otherKeys.length > 0) {
+                            // 计算未锁定滑块的总权重
+                            const otherTotal = otherKeys.reduce((sum, k) => sum + weights[k], 0);
+                            // 按比例分配差值
+                            otherKeys.forEach(k => {
+                                const ratio = otherTotal > 0 ? weights[k] / otherTotal : 1 / otherKeys.length;
+                                const change = Math.round(diff * ratio);
+                                weights[k] = Math.max(0, Math.min(100, weights[k] + change));
+                            });
+                        }
                     }
+
                     updateWeightDisplay();
-                    document.getElementById('total-weight').textContent = getTotalWeight();
                     recalculateScores();
                 });
             });
@@ -1230,24 +1254,28 @@
                         <div>面积: ${p.area_ha >= 5 && p.area_ha <= 15 ? '+10分' : p.area_ha > 15 ? '+5分' : '-5分'} (${p.area_ha.toFixed(1)}公顷)</div>
                     </div>
                 `;
+            } else if (mode === 'ai-search') {
+                // AI辅助编码模式 - 只显示基本信息
+                potentialSection.innerHTML = `
+                    <h3>地块信息</h3>
+                    <div class="pot-row"><span>用地编码</span><span class="pot-value">${p.code}</span></div>
+                    <div class="pot-row"><span>用地类型</span><span class="pot-value">${getLandUseName(p.layer || p.code)}</span></div>
+                    <div class="pot-row"><span>地块面积</span><span class="pot-value">${p.area_ha} 公顷</span></div>
+                `;
             } else {
-                // 常规模式 - 恢复原始INDICATORS
+                // 个性化规则模式 - 只显示潜力评分
                 const baseFar = p.base_far || 0;
                 const adjFar = p.adjusted_far || 0;
                 const formFactor = p.form_factor || 0;
                 const areaCorr = p.area_correction || 0;
 
                 potentialSection.innerHTML = `
-                    <h3>INDICATORS</h3>
-                    <div class="pot-row"><span>基本容积率(FAR)</span><span class="pot-value">${baseFar.toFixed(2)}</span></div>
+                    <h3>发展潜力</h3>
+                    <div class="pot-row"><span>基准容积率</span><span class="pot-value">${baseFar.toFixed(2)}</span></div>
                     <div class="pot-row"><span>调整容积率</span><span class="pot-value">${adjFar.toFixed(2)}</span></div>
-                    <div class="pot-row" style="font-size:9px;color:#999;margin-bottom:8px;">基准容积率×形态系数×面积系数</div>
-                    <div class="pot-row"><span>最大建筑面积</span><span class="pot-value">${(p.area_ha * 10000 * adjFar / 10000).toFixed(2)} 万m²</span></div>
                     <div class="pot-row"><span>形态系数</span><span class="pot-value">${formFactor.toFixed(3)}</span></div>
-                    <div class="pot-row" style="font-size:9px;color:#999;margin-bottom:8px;">形状紧凑度(0-1)，越接近1越规整</div>
                     <div class="pot-row"><span>面积系数</span><span class="pot-value">${areaCorr.toFixed(2)}</span></div>
-                    <div class="pot-row" style="font-size:9px;color:#999;margin-bottom:8px;">按面积分级赋值(0.6-1.0)</div>
-                    <div class="pot-row" style="margin-top:12px;padding-top:12px;border-top:1px solid #ccc;"><span>开发潜力评分</span><span class="pot-value">${p.potential_score || 0} 分</span></div>
+                    <div class="pot-row" style="margin-top:12px;padding-top:12px;border-top:1px solid #ccc;"><span>开发潜力</span><span class="pot-value" style="color:#e74c3c;font-weight:bold;">${p.potential_score || 0} 分</span></div>
                 `;
             }
             document.getElementById('info-panel').classList.add('show');
