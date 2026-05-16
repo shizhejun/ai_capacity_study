@@ -925,10 +925,19 @@
             html += `总面积: ${totalAreaHa.toFixed(2)}公顷<br>`;
             html += `可实现: ${feasibleCount}/${residentialLands.length}块<br>`;
             html += `可实现面积: ${totalFeasibleArea.toFixed(2)}公顷<br>`;
-            html += `<div style="margin-top:8px;font-size:9px;color:#999;">`;
-            html += `禀赋高分地块→多分体量→需高FAR<br>`;
-            html += `禀赋低分地块→少分体量→需低FAR`;
-            html += `</div>`;
+            html += `<div style="margin-top:8px;">禀赋分布:</div>`;
+
+            // 按禀赋分数排序并显示
+            const sorted = [...residentialLands].sort((a, b) => (b.properties.quality_score || 0) - (a.properties.quality_score || 0));
+            sorted.forEach(f => {
+                const p = f.properties;
+                html += `<div style="color:${p.is_feasible ? '#27ae60' : '#e74c3c'};margin-bottom:2px;">`;
+                html += `${p.code}: ${(p.quality_score||0).toFixed(0)}分 `;
+                html += `(地铁${(p.min_metro_dist||0).toFixed(0)}m `;
+                html += `公园${(p.min_park_dist||0).toFixed(0)}m `;
+                html += `公服${(p.min_public_dist||0).toFixed(0)}m)`;
+                html += `</div>`;
+            });
 
             document.getElementById('strategy-results').innerHTML = html;
 
