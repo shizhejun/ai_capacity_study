@@ -169,14 +169,40 @@
             if (otherKeys.length === 0) return;
 
             const otherTotal = otherKeys.reduce((sum, k) => sum + weights[k], 0);
-            if (otherTotal === 0) return;
 
-            // 按比例重分配
-            otherKeys.forEach(k => {
-                const ratio = weights[k] / otherTotal;
-                const adjustment = Math.round(diff * ratio);
-                weights[k] = Math.max(0, Math.min(100, weights[k] - adjustment));
-            });
+            // 如果需要从其他滑块获取更多空间（diff为负表示增加当前滑块）
+            if (diff < 0) {
+                // 其他滑块总共能给出的最大值
+                const available = otherTotal;
+                // 实际需要获取的值
+                const needed = -diff;
+
+                if (needed <= available) {
+                    // 够分，按比例从其他滑块获取
+                    otherKeys.forEach(k => {
+                        const ratio = weights[k] / otherTotal;
+                        const take = Math.round(needed * ratio);
+                        weights[k] -= take;
+                    });
+                } else {
+                    // 不够分，先把其他的全部拿走，当前滑块只能增加到 max(当前值, 100 - lockedTotal)
+                    const lockedTotal = (locked.far ? weights.far : 0) + (locked.form ? weights.form : 0) + (locked.area ? weights.area : 0);
+                    const maxAllowed = 100 - lockedTotal;
+                    weights[changedKey] = Math.min(weights[changedKey], maxAllowed);
+
+                    otherKeys.forEach(k => {
+                        weights[k] = 0;
+                    });
+                }
+            } else {
+                // 减少当前滑块，按比例分配给其他滑块
+                if (otherTotal === 0) return;
+                otherKeys.forEach(k => {
+                    const ratio = weights[k] / otherTotal;
+                    const give = Math.round(diff * ratio);
+                    weights[k] = Math.min(100, weights[k] + give);
+                });
+            }
         }
 
         function toggleLock(key) {
@@ -243,8 +269,18 @@
                     // 锁定的滑块不能动
                     if (locked[key]) return;
 
-                    const newVal = parseInt(this.value);
+                    let newVal = parseInt(this.value);
                     const oldVal = weights[key];
+
+                    // 计算当前可用的最大权重（确保总和不超过100）
+                    const lockedTotal = (locked.far ? weights.far : 0) + (locked.form ? weights.form : 0) + (locked.area ? weights.area : 0);
+                    const otherUnlockedTotal = ['far', 'form', 'area'].filter(k => k !== key && !locked[k]).reduce((sum, k) => sum + weights[k], 0);
+                    const maxAllowed = 100 - lockedTotal - otherUnlockedTotal + oldVal;
+
+                    // 限制新值不超过允许的最大值
+                    newVal = Math.min(newVal, maxAllowed);
+                    this.value = newVal;
+
                     weights[key] = newVal;
                     val.textContent = newVal;
 
