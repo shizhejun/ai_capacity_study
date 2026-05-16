@@ -882,13 +882,16 @@
                     refMetroStations.push(centroid);
                     refMetroNames.push('S41-公交场站');
                 }
-                // 公园绿地和防护绿地
+                // 公园绿地、防护绿地、体育用地（广州体育公园）
                 else if (layer.includes('G1') || code.includes('G1')) {
                     refParks.push(centroid);
                     refParkNames.push('G1-公园绿地');
                 } else if (layer.includes('G2') || code.includes('G2')) {
                     refParks.push(centroid);
                     refParkNames.push('G2-防护绿地');
+                } else if (layer.includes('A4') || code.includes('A4')) {
+                    refParks.push(centroid);
+                    refParkNames.push('A4-体育用地');
                 }
                 // 公服设施：仅限A1行政办公、A2文化设施、A5医疗卫生、A6社会福利
                 else if (layer.includes('A1') || code.includes('A1')) {
@@ -904,7 +907,7 @@
                     refPublicServices.push(centroid);
                     refPublicNames.push('A6-社会福利');
                 }
-                // A3(教育科研)、A4(体育)、A7(文物)、A33(中小学)等不算公服
+                // A3(教育科研)、A33(中小学)、A7(文物)等不算公服
             });
 
             landData.forEach(f => {
