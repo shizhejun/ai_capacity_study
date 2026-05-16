@@ -74,7 +74,16 @@
             <button onclick="setMode('potential')" id="btn-potential">个性化规则</button>
         </div>
         <div id="weight-panel">
-            <h3>WEIGHT SETTINGS</h3>
+            <h3>评分规则说明</h3>
+            <div style="font-size:10px;color:#666;line-height:1.6;margin-bottom:12px;padding:8px;background:#fff;border-left:2px solid #e74c3c;">
+                ⚠️ 以下评分规则仅为试验目的，实际项目需结合专业分析设定评分标准
+            </div>
+            <div style="font-size:10px;color:#333;line-height:1.8;margin-bottom:12px;">
+                <div style="font-weight:600;margin-bottom:6px;">指标说明：</div>
+                <div>• <strong>FAR标准化分</strong>：容积率（地块面积×容积率）与同类用地基准值的比值，反映开发强度</div>
+                <div>• <strong>形态系数</strong>：地块形状紧凑度（0-1），越接近1表示形状越规整，越有利于开发</div>
+                <div>• <strong>面积系数</strong>：根据地块面积分级赋值，小地块和超大地块系数较低</div>
+            </div>
             <div class="formula">
                 评分 = (FAR标准化分×W1 + 形态系数×W2 + 面积系数×W3) / 总权重 × 100
             </div>
