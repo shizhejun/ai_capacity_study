@@ -661,12 +661,15 @@
             document.getElementById('weight-panel').style.display = (m==='potential' || m==='strategy') ? 'block' : 'none';
             document.getElementById('search').style.display = m==='raw' ? 'none' : 'block';
 
-            // 策略模式下显示分析面板
+// 策略模式下显示分析面板
             if (m === 'strategy') {
+                console.log('Switching to strategy mode');
                 document.getElementById('weight-panel').innerHTML = getStrategyPanelHTML();
+                console.log('HTML set, waiting for timeout...');
                 setTimeout(() => {
+                    console.log('Timeout fired');
                     initStrategyEvents();
-                    calculateSpatialFactors();
+                    calculateQualityScore();
                     updateStrategyAnalysis();
                 }, 100);
             } else {
@@ -755,12 +758,18 @@
         }
 
         function initStrategyEvents() {
+            console.log('initStrategyEvents called');
             const params = ['land-price', 'build-cost', 'profit-margin', 'sale-price'];
             params.forEach(id => {
                 const input = document.getElementById(id);
                 const val = document.getElementById(id + '-val');
-                if (!input || !val) return;
+                console.log('Setting up', id, 'input:', input, 'val:', val);
+                if (!input || !val) {
+                    console.error('Element not found:', id);
+                    return;
+                }
                 input.addEventListener('input', function() {
+                    console.log('Slider changed:', id, this.value);
                     val.textContent = this.value + (id === 'profit-margin' ? '%' : '元/m²');
                     updateStrategyAnalysis();
                 });
