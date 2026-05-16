@@ -151,6 +151,77 @@
             'YD-R2B1': 3.0, 'YD-S41': 0.4, 'YD-U12': 0.8
         };
 
+        // 用地类型中文名称（依据GB50137-2011城市用地分类与规划建设用地标准）
+        // 格式说明：单一类型直接显示，兼容类型用"/"分隔
+        const LAND_USE_NAMES = {
+            // R-居住用地
+            'YD-R1': 'R1-一类居住用地',
+            'YD-R2': 'R2-二类居住用地',
+            'YD-R3': 'R3-三类居住用地',
+            'YD-R11': 'R11-住宅用地',
+            'YD-R12': 'R12-服务设施用地',
+            'YD-R21': 'R21-住宅用地',
+            'YD-R22': 'R22-服务设施用地',
+            // A-公共管理与公共服务用地
+            'YD-A1': 'A1-行政办公用地',
+            'YD-A2': 'A2-文化设施用地',
+            'YD-A21': 'A21-图书展览用地',
+            'YD-A22': 'A22-群众活动设施用地',
+            'YD-A3': 'A3-教育科研用地',
+            'YD-A4': 'A4-中小学用地',
+            'YD-A5': 'A5-医疗卫生用地',
+            // B-商业服务业设施用地
+            'YD-B1': 'B1-商业设施用地',
+            'YD-B2': 'B2-商务设施用地',
+            'YD-B3': 'B3-娱乐康体用地',
+            'YD-B4': 'B4-公用设施营业网点用地',
+            'YD-B1B2': 'B1/B2-商业/商务用地（兼容）',
+            'YD-B41': 'B41-加油加气站用地',
+            'YD-B42': 'B42-其他公用设施营业网点用地',
+            // M-工业用地
+            'YD-M1': 'M1-一类工业用地',
+            'YD-M2': 'M2-二类工业用地',
+            'YD-M3': 'M3-三类工业用地',
+            'YD-E1': 'M1-一类工业用地', // 兼容旧代码
+            'YD-E2': 'M2-二类工业用地',
+            // W-物流仓储用地
+            'YD-W1': 'W1-物流仓储用地',
+            'YD-W2': 'W2-危险品仓储用地',
+            // S-道路与交通设施用地
+            'YD-S1': 'S1-城市道路用地',
+            'YD-S2': 'S2-轨道交通用地',
+            'YD-S3': 'S3-交通枢纽用地',
+            'YD-S41': 'S41-公共交通场站用地',
+            // U-公用设施用地
+            'YD-U1': 'U1-供应设施用地',
+            'YD-U2': 'U2-安全设施用地',
+            'YD-U3': 'U3-环境设施用地',
+            'YD-U4': 'U4-其他公用设施用地',
+            'YD-U12': 'U1/U2-供应/安全设施用地',
+            // G-绿地与广场用地
+            'YD-G1': 'G1-公园绿地',
+            'YD-G2': 'G2-防护绿地',
+            'YD-G3': 'G3-广场用地',
+            // 特殊混合用地
+            'YD-R2B1': 'R2/B1-二类居住/商业用地（兼容）',
+        };
+
+        function getLandUseName(code) {
+            if (!code) return '-';
+            // 尝试精确匹配
+            if (LAND_USE_NAMES[code]) return LAND_USE_NAMES[code];
+            // 尝试去掉后缀匹配（如 YD-A33_边线 -> YD-A33）
+            const baseCode = code.split('_')[0];
+            if (LAND_USE_NAMES[baseCode]) return LAND_USE_NAMES[baseCode];
+            // 进一步尝试匹配前缀（如 YD-A33 -> YD-A33）
+            for (const key in LAND_USE_NAMES) {
+                if (baseCode.startsWith(key.replace('YD-', ''))) {
+                    return LAND_USE_NAMES[key];
+                }
+            }
+            return code; // 未找到则返回原始代码
+        }
+
         function getTotalWeight() {
             return weights.far + weights.form + weights.area;
         }
@@ -405,7 +476,7 @@
 
                 // AI辅助编码模式 - 只显示编码和用地类型
                 if (mode === 'ai-search') {
-                    d.innerHTML = '<div class="code">' + p.code + '</div><div class="meta"><span class="stat-badge">用地类型: ' + (p.layer || '-').split('_')[0] + '</span></div>';
+                    d.innerHTML = '<div class="code">' + p.code + '</div><div class="meta"><span class="stat-badge">' + getLandUseName(p.layer || p.code) + '</span></div>';
                 }
                 // 个性化规则模式 - 显示完整信息
                 else {
@@ -529,7 +600,7 @@
 
         function showInfo(p) {
             document.getElementById('info-code').textContent = p.code;
-            document.getElementById('info-layer').textContent = p.layer;
+            document.getElementById('info-layer').textContent = getLandUseName(p.layer || p.code);
             document.getElementById('info-area').textContent = p.area_ha + ' 公顷';
             document.getElementById('info-base-far').textContent = p.base_far || '-';
             document.getElementById('info-adj-far').textContent = p.adjusted_far ? p.adjusted_far.toFixed(2) : '-';
