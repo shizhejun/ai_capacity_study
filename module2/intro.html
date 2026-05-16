@@ -20,21 +20,24 @@
             display: flex;
             align-items: center;
             gap: 20px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #fff;
         }
         .header h1 {
             font-size: 15px;
             font-weight: 600;
+            color: #fff;
         }
         .header .subtitle {
             font-size: 11px;
-            color: #666;
+            color: #aaa;
         }
         .back-nav {
             font-size: 11px;
             white-space: nowrap;
         }
         .back-nav a {
-            color: #000;
+            color: #fff;
             text-decoration: none;
             margin-right: 10px;
         }
@@ -53,18 +56,29 @@
             flex-shrink: 0;
         }
         .sidebar-title {
-            font-size: 11px;
+            font-size: 17px;
             font-weight: 600;
             margin-bottom: 10px;
             padding-bottom: 8px;
-            border-bottom: 2px solid #000;
+            border-bottom: 2px solid #FF6B00;
+            color: #333;
         }
         .section-label {
-            font-size: 9px;
+            font-size: 14px;
             font-weight: 600;
             color: #888;
             margin: 10px 0 6px;
             letter-spacing: 0.5px;
+        }
+        .section-label.nat {
+            color: #E65100;
+            border-left: 3px solid #E65100;
+            padding-left: 6px;
+        }
+        .section-label.gz {
+            color: #4DA6FF;
+            border-left: 3px solid #4DA6FF;
+            padding-left: 6px;
         }
         .triplet-grid {
             display: grid;
@@ -74,15 +88,19 @@
         .triplet-card {
             background: #f8f8f8;
             border: 1px solid #e0e0e0;
-            padding: 8px 10px;
+            padding: 12px 15px;
             cursor: pointer;
-            font-size: 10px;
+            font-size: 15px;
             line-height: 1.35;
+            transition: all 0.2s ease;
         }
         .triplet-card:hover,
         .triplet-card.active {
-            background: #000;
+            background: linear-gradient(135deg, #FF6B00, #FF8C00);
+            border-color: #FF6B00;
             color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(255, 107, 0, 0.3);
         }
         .triplet-card .s {
             font-weight: 700;
@@ -90,19 +108,34 @@
         }
         .triplet-card .p {
             display: inline-block;
-            background: #000;
+            background: #FF6B00;
             color: #fff;
-            font-size: 7px;
-            padding: 1px 4px;
+            font-size: 11px;
+            padding: 2px 6px;
             margin: 2px 0;
+            border-radius: 2px;
         }
         .triplet-card:hover .p,
         .triplet-card.active .p {
             background: #fff;
-            color: #000;
+            color: #FF6B00;
+        }
+        .triplet-card.gz-card:hover,
+        .triplet-card.gz-card.active {
+            background: linear-gradient(135deg, #4DA6FF, #66B3FF);
+            border-color: #4DA6FF;
+            box-shadow: 0 2px 8px rgba(77, 166, 255, 0.3);
+        }
+        .triplet-card.gz-card .p {
+            background: #4DA6FF;
+        }
+        .triplet-card.gz-card:hover .p,
+        .triplet-card.gz-card.active .p {
+            background: #fff;
+            color: #4DA6FF;
         }
         .triplet-card .o {
-            font-size: 9px;
+            font-size: 14px;
             color: #555;
         }
         .triplet-card:hover .o,
@@ -140,8 +173,8 @@
             margin-right: 4px;
             vertical-align: middle;
         }
-        .legend-dot.nat { background: #000; }
-        .legend-dot.gz { background: #555; }
+        .legend-dot.nat { background: linear-gradient(135deg, #FF6B00, #FF8C00); }
+        .legend-dot.gz { background: linear-gradient(135deg, #4DA6FF, #66B3FF); }
         .note {
             font-size: 10px;
             color: #999;
@@ -156,7 +189,10 @@
         <h1>2026年房地产动态知识图谱</h1>
         <span class="subtitle">全国政策传导 · 广州地方配套</span>
         <div class="back-nav">
+            <a href="../index.html">首页</a>
+            <span style="color: #666;">|</span>
             <a href="tech.html">← 技术路线</a>
+            <span style="color: #666;">|</span>
             <a href="analysis.html">政策分析 →</a>
         </div>
     </div>
@@ -165,7 +201,7 @@
         <div class="sidebar">
             <div class="sidebar-title">三元组详情</div>
 
-            <div class="section-label">全国政策 → 广州响应</div>
+            <div class="section-label nat">全国政策 → 广州响应</div>
             <div class="triplet-grid">
                 <div class="triplet-card" data-edge="0">
                     <div class="s">全国·去库存</div>
@@ -189,24 +225,24 @@
                 </div>
             </div>
 
-            <div class="section-label">广州地方配套措施（自行出台）</div>
+            <div class="section-label gz">广州地方配套措施（自行出台）</div>
             <div class="triplet-grid">
-                <div class="triplet-card" data-edge="4">
+                <div class="triplet-card gz-card" data-edge="4">
                     <div class="s">广州·房票政策</div>
                     <span class="p">→ 自行出台</span>
                     <div class="o">驱动城市更新、激活市场(历史新高)</div>
                 </div>
-                <div class="triplet-card" data-edge="5">
+                <div class="triplet-card gz-card" data-edge="5">
                     <div class="s">广州·公积金</div>
                     <span class="p">→ 自行出台</span>
                     <div class="o">个人100万/两人200万</div>
                 </div>
-                <div class="triplet-card" data-edge="6">
+                <div class="triplet-card gz-card" data-edge="6">
                     <div class="s">广州·卖旧买新</div>
                     <span class="p">→ 自行出台</span>
                     <div class="o">贷款总额1%，单套最高3万元</div>
                 </div>
-                <div class="triplet-card" data-edge="7">
+                <div class="triplet-card gz-card" data-edge="7">
                     <div class="s">广州·抵押贷款</div>
                     <span class="p">→ 自行出台</span>
                     <div class="o">主城区房龄上限至30年</div>
@@ -233,25 +269,49 @@
         // 节点布局（使用百分比，方便拖动后保持比例）
         const nodes = [
             // Tier 1 全国
-            { label: '全国政策', x: 0.22, y: 0.48, tier: 1 },
+            { label: '全国政策', x: 0.22, y: 0.48, tier: 1, group: 'nat' },
             // Tier 2 全国
-            { label: '去库存', x: 0.1, y: 0.22, tier: 2 },
-            { label: '控增量', x: 0.1, y: 0.42, tier: 2 },
-            { label: '优供给', x: 0.1, y: 0.62, tier: 2 },
-            { label: '好房子', x: 0.1, y: 0.82, tier: 2 },
+            { label: '去库存', x: 0.1, y: 0.22, tier: 2, group: 'nat' },
+            { label: '控增量', x: 0.1, y: 0.42, tier: 2, group: 'nat' },
+            { label: '优供给', x: 0.1, y: 0.62, tier: 2, group: 'nat' },
+            { label: '好房子', x: 0.1, y: 0.82, tier: 2, group: 'nat' },
             // Tier 1 广州
-            { label: '广州', x: 0.55, y: 0.48, tier: 1 },
+            { label: '广州', x: 0.55, y: 0.48, tier: 1, group: 'gz' },
             // Tier 2 广州 - 传导政策
-            { label: '收购保障房', x: 0.42, y: 0.22, tier: 2 },
-            { label: '好房子28条', x: 0.42, y: 0.42, tier: 2 },
-            { label: '土地供应', x: 0.42, y: 0.62, tier: 2 },
-            { label: '好房子建设', x: 0.42, y: 0.82, tier: 2 },
+            { label: '收购保障房', x: 0.42, y: 0.22, tier: 2, group: 'gz' },
+            { label: '好房子28条', x: 0.42, y: 0.42, tier: 2, group: 'gz' },
+            { label: '土地供应', x: 0.42, y: 0.62, tier: 2, group: 'gz' },
+            { label: '好房子建设', x: 0.42, y: 0.82, tier: 2, group: 'gz' },
             // Tier 2 广州 - 地方配套
-            { label: '房票政策', x: 0.72, y: 0.22, tier: 2 },
-            { label: '公积金', x: 0.72, y: 0.42, tier: 2 },
-            { label: '卖旧买新', x: 0.72, y: 0.62, tier: 2 },
-            { label: '抵押放宽', x: 0.72, y: 0.82, tier: 2 },
+            { label: '房票政策', x: 0.72, y: 0.22, tier: 2, group: 'gz' },
+            { label: '公积金', x: 0.72, y: 0.42, tier: 2, group: 'gz' },
+            { label: '卖旧买新', x: 0.72, y: 0.62, tier: 2, group: 'gz' },
+            { label: '抵押放宽', x: 0.72, y: 0.82, tier: 2, group: 'gz' },
         ];
+
+        // 颜色配置 - 现代渐变配色
+        const colors = {
+            nat: {
+                primary: '#FF6B00',
+                secondary: '#FF8C00',
+                text: '#fff',
+                glow: 'rgba(255, 107, 0, 0.4)'
+            },
+            gz: {
+                primary: '#4DA6FF',
+                secondary: '#66B3FF',
+                text: '#fff',
+                glow: 'rgba(77, 166, 255, 0.4)'
+            },
+};
+
+        function getNodeRadius(tier) {
+            return tier === 1 ? 36 : 28;
+        }
+
+        function getNodeFont(tier) {
+            return tier === 1 ? 'bold 13px -apple-system, sans-serif' : '12px -apple-system, sans-serif';
+        }
 
         // 边定义
         const edgeDefs = [
@@ -281,16 +341,10 @@
             drawGraph();
         }
 
-        function getNodeRadius(tier) {
-            return tier === 1 ? 32 : 24;
-        }
-
-        function getNodeFont(tier) {
-            return tier === 1 ? 'bold 12px -apple-system, sans-serif' : '11px -apple-system, sans-serif';
-        }
-
         function drawGraph() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // 画布背景
+            ctx.fillStyle = '#404040';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             // 预计算节点像素坐标
             const nodePositions = nodes.map(n => ({
@@ -298,68 +352,142 @@
                 y: n.y * canvas.height,
             }));
 
-            // 画所有边（分级连线）
+            // 画所有边（分级连线）- 更柔和的灰色
             edgeDefs.forEach(({ f, t }) => {
                 const p1 = nodePositions[f];
                 const p2 = nodePositions[t];
                 ctx.beginPath();
                 ctx.moveTo(p1.x, p1.y);
                 ctx.lineTo(p2.x, p2.y);
-                ctx.strokeStyle = '#ddd';
-                ctx.lineWidth = 1;
+                ctx.strokeStyle = '#e8e8e8';
+                ctx.lineWidth = 1.5;
                 ctx.stroke();
             });
 
-            // 画三元组边
+            // 画三元组边 - 使用曲线
             tripletEdges.forEach(({ from, to, label }, idx) => {
                 const p1 = nodePositions[from];
                 const p2 = nodePositions[to];
+                const edgeColor = nodes[from].group === 'nat' ? '#FF6B00' : '#4DA6FF';
+                const isActive = activeEdge === idx;
+                const isOther = activeEdge !== -1 && !isActive;
+
+                // 计算控制点使线条微微弯曲
+                const midX = (p1.x + p2.x) / 2;
+                const midY = (p1.y + p2.y) / 2;
+                const dx = p2.x - p1.x;
+                const dy = p2.y - p1.y;
+                const offset = isActive ? 8 : 0;
+                const cpX = midX + dy * 0.05 + offset;
+                const cpY = midY - dx * 0.05 - offset;
 
                 ctx.beginPath();
                 ctx.moveTo(p1.x, p1.y);
-                ctx.lineTo(p2.x, p2.y);
+                ctx.quadraticCurveTo(cpX, cpY, p2.x, p2.y);
 
-                if (activeEdge === idx) {
-                    ctx.strokeStyle = '#000';
+                if (isActive) {
+                    ctx.strokeStyle = edgeColor;
                     ctx.lineWidth = 3;
-                } else if (activeEdge !== -1) {
+                    ctx.shadowColor = edgeColor;
+                    ctx.shadowBlur = 10;
+                } else if (isOther) {
                     ctx.strokeStyle = '#e0e0e0';
-                    ctx.lineWidth = 1;
+                    ctx.lineWidth = 1.5;
+                    ctx.shadowBlur = 0;
                 } else {
-                    ctx.strokeStyle = '#888';
+                    ctx.strokeStyle = edgeColor;
                     ctx.lineWidth = 2;
+                    ctx.globalAlpha = 0.6;
+                    ctx.shadowBlur = 0;
                 }
                 ctx.stroke();
+                ctx.globalAlpha = 1;
+                ctx.shadowBlur = 0;
 
-                // 关系标签
-                const mx = (p1.x + p2.x) / 2;
-                const my = (p1.y + p2.y) / 2;
-                ctx.font = '10px -apple-system, sans-serif';
+                // 关系标签 - 胶囊形标签
+                const mx = (p1.x + cpX) / 2;
+                const my = (p1.y + cpY) / 2;
+                ctx.font = 'bold 11px -apple-system, sans-serif';
                 const m = ctx.measureText(label);
-                const pw = m.width + 10;
-                ctx.fillStyle = activeEdge === idx ? '#000' : '#fff';
-                ctx.fillRect(mx - pw/2, my - 9, pw, 18);
-                ctx.fillStyle = activeEdge === idx ? '#fff' : '#000';
+                const pw = m.width + 16;
+                const ph = 22;
+                const labelRadius = ph / 2;
+
+                // 标签背景
+                ctx.beginPath();
+                ctx.roundRect(mx - pw/2, my - ph/2, pw, ph, labelRadius);
+                ctx.fillStyle = isActive ? edgeColor : (isOther ? '#ccc' : edgeColor);
+                ctx.fill();
+
+                // 标签文字
+                ctx.fillStyle = '#fff';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillText(label, mx, my);
             });
 
-            // 画节点（圆角矩形）
+            // 画节点（现代胶囊形设计）
             nodes.forEach((n, i) => {
                 const { x, y } = nodePositions[i];
                 const r = getNodeRadius(n.tier);
+                const c = colors[n.group];
+                const isHovered = draggedNodeIdx === i;
+
+                ctx.font = getNodeFont(n.tier);
+                const textWidth = ctx.measureText(n.label).width;
+                const padding = n.tier === 1 ? 20 : 14;
+                const boxWidth = textWidth + padding * 2;
+                const boxHeight = n.tier === 1 ? 40 : 32;
+                const radius = boxHeight / 2;
 
                 // 拖动中的节点高亮
+                if (isHovered) {
+                    // 外发光效果
+                    ctx.shadowColor = c.glow;
+                    ctx.shadowBlur = 20;
+                    ctx.shadowOffsetX = 0;
+                    ctx.shadowOffsetY = 0;
+                } else {
+                    // 普通阴影
+                    ctx.shadowColor = 'rgba(0, 0, 0, 0.15)';
+                    ctx.shadowBlur = 8;
+                    ctx.shadowOffsetX = 0;
+                    ctx.shadowOffsetY = 4;
+                }
+
+                // 绘制渐变填充的胶囊形状
                 ctx.beginPath();
-                ctx.roundRect(x - r, y - r * 0.6, r * 2, r * 1.2, 6);
-                ctx.fillStyle = draggedNodeIdx === i ? '#333' : (n.tier === 1 ? '#000' : '#555');
+                ctx.roundRect(x - boxWidth / 2, y - boxHeight / 2, boxWidth, boxHeight, radius);
+
+                // 渐变填充
+                const gradient = ctx.createLinearGradient(
+                    x - boxWidth / 2, y,
+                    x + boxWidth / 2, y
+                );
+                if (isHovered) {
+                    gradient.addColorStop(0, '#333');
+                    gradient.addColorStop(1, '#555');
+                } else {
+                    gradient.addColorStop(0, c.primary);
+                    gradient.addColorStop(1, c.secondary);
+                }
+                ctx.fillStyle = gradient;
                 ctx.fill();
 
-                ctx.fillStyle = '#fff';
+                // 白色边框
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                // 重置阴影
+                ctx.shadowColor = 'transparent';
+                ctx.shadowBlur = 0;
+                ctx.shadowOffsetY = 0;
+
+                // 文字
+                ctx.fillStyle = isHovered ? '#fff' : c.text;
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.font = getNodeFont(n.tier);
                 ctx.fillText(n.label, x, y);
             });
         }
@@ -370,7 +498,12 @@
                 const px = nodes[i].x * canvas.width;
                 const py = nodes[i].y * canvas.height;
                 const r = getNodeRadius(nodes[i].tier);
-                if (x >= px - r && x <= px + r && y >= py - r && y <= py + r) {
+                ctx.font = getNodeFont(nodes[i].tier);
+                const textWidth = ctx.measureText(nodes[i].label).width;
+                const padding = 12;
+                const boxWidth = textWidth + padding * 2;
+                const boxHeight = r * 1.2;
+                if (x >= px - boxWidth / 2 && x <= px + boxWidth / 2 && y >= py - boxHeight / 2 && y <= py + boxHeight / 2) {
                     return i;
                 }
             }

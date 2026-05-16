@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI + 城市规划 | 辅助决策方法思路</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+            background: #fff;
+            color: #000;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .back-nav {
+            margin-bottom: 30px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            font-size: 14px;
+        }
+        .back-nav a {
+            color: #000;
+            text-decoration: none;
+        }
+        .back-nav a:hover {
+            text-decoration: underline;
+        }
+        .separator { color: #ccc; }
+        .section {
+            margin-bottom: 50px;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #000;
+        }
+        .step {
+            background: #fff;
+            border: 2px solid #000;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+        .step-num {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .step-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        .step-desc {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.8;
+        }
+        .step-tools {
+            margin-top: 15px;
+            font-size: 13px;
+            color: #666;
+        }
+        .step-tools span {
+            display: inline-block;
+            background: #f5f5f5;
+            padding: 4px 12px;
+            margin: 3px 3px 3px 0;
+        }
+        .diff-section {
+            background: #f8f8f8;
+            border: 1px solid #ddd;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        .diff-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #000;
+        }
+        .diff-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .diff-item {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 16px;
+        }
+        .diff-item.highlight {
+            border-color: #000;
+            background: #fff;
+        }
+        .diff-item-title {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .diff-item.highlight .diff-item-title {
+            color: #000;
+        }
+        .diff-item.common .diff-item-title {
+            color: #666;
+        }
+        .diff-list {
+            font-size: 12px;
+            color: #333;
+            line-height: 1.8;
+        }
+        .enter-btn {
+            background: #000;
+            color: #fff;
+            border: none;
+            padding: 16px 40px;
+            font-size: 14px;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto;
+        }
+        .enter-btn:hover { background: #333; }
+        .note {
+            font-size: 13px;
+            color: #999;
+            margin-top: 40px;
+            text-align: center;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="back-nav">
+            <a href="../index.html">首页</a>
+            <span style="color: #666;">|</span>
+            <a href="index.html">分析工具</a>
+        </div>
+
+        <h1>AI + 城市规划 | 辅助决策方法思路</h1>
+        <p class="subtitle">借助AI能力构建智能化规划决策辅助工具</p>
+
+        <div class="section">
+            <h2 class="section-title">核心理念</h2>
+            <div class="step">
+                <div class="step-desc">
+                    本项目展示的是一种<strong>借助AI能力构建智能化规划决策辅助工具</strong>的思路，
+                    而非一个完整的GIS系统。传统GIS（如QGIS、ArcGIS）提供标准化工具，
+                    需要用户自行组合使用；我们则探索如何借助AI能力，让系统能够"理解"用户的决策需求，
+                    自动适配数据、分析模型和展示方式，为规划决策提供辅助支持。
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">与传统GIS的对比</h2>
+            <div class="diff-section">
+                <div class="diff-grid">
+                    <div class="diff-item common">
+                        <div class="diff-item-title">QGIS / GeoServer等开源GIS</div>
+                        <div class="diff-list">
+                            · 通用工具集<br>
+                            · 需要用户自行组合<br>
+                            · 门槛较高<br>
+                            · 需编程能力
+                        </div>
+                    </div>
+                    <div class="diff-item common">
+                        <div class="diff-item-title">ArcGIS / SuperMap等商业GIS</div>
+                        <div class="diff-list">
+                            · 标准化功能模块<br>
+                            · 固化的分析流程<br>
+                            · 成本高昂<br>
+                            · 定制扩展困难
+                        </div>
+                    </div>
+                    <div class="diff-item highlight">
+                        <div class="diff-item-title">AI驱动的决策辅助</div>
+                        <div class="diff-list">
+                            · 借助AI理解决策需求<br>
+                            · 自动适配数据与分析模型<br>
+                            · 无需编程基础<br>
+                            · 智能化决策支持
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">案例实现思路</h2>
+            <div class="step">
+                <div class="step-num">思路 01</div>
+                <div class="step-title">数据整合与索引</div>
+                <div class="step-desc">
+                    将多源异构数据（用地边界、规划指标、空间形态）进行整合，
+                    建立面向检索的数据索引体系，支持多维度查询。
+                </div>
+                <div class="step-tools">
+                    <span>数据整合</span>
+                    <span>索引构建</span>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-num">思路 02</div>
+                <div class="step-title">智能分析模型</div>
+                <div class="step-desc">
+                    将专业知识（如开发潜力评估方法）转化为可配置的评分模型，
+                    让系统能够"理解"并自动执行分析逻辑。
+                </div>
+                <div class="step-tools">
+                    <span>指标体系</span>
+                    <span>评分模型</span>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-num">思路 03</div>
+                <div class="step-title">交互式可视化</div>
+                <div class="step-desc">
+                    将分析结果以直观的可视化方式呈现，
+                    支持交互式筛选、排序、详情查看，降低使用门槛。
+                </div>
+                <div class="step-tools">
+                    <span>交互可视化</span>
+                    <span>实时反馈</span>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="enter-btn" onclick="location.href='index.html'">案例展示 →</button>
+
+        <p class="note">本案例展示AI驱动的智能化规划决策辅助方法思路</p>
+    </div>
+</body>
+</html>

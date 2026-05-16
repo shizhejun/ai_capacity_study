@@ -64,10 +64,14 @@
 </head>
 <body>
     <div id="sidebar">
-        <div id="sidebar-header"><h1>DEVELOPMENT POTENTIAL</h1></div>
+        <div id="sidebar-header" style="display:flex;align-items:center;gap:16px;">
+            <a href="../index.html" style="font-size:11px;color:#666;text-decoration:none;">← 首页</a>
+            <h1 style="flex:1;">AI辅助规划决策</h1>
+        </div>
         <div id="mode-toggle">
-            <button onclick="setMode('potential')" class="active" id="btn-potential">潜力分析</button>
-            <button onclick="setMode('landuse')" id="btn-landuse">用地图</button>
+            <button onclick="setMode('raw')" class="active" id="btn-raw">原始用地图</button>
+            <button onclick="setMode('ai-search')" id="btn-ai">AI辅助编码</button>
+            <button onclick="setMode('potential')" id="btn-potential">个性化规则</button>
         </div>
         <div id="weight-panel">
             <h3>WEIGHT SETTINGS</h3>
@@ -123,7 +127,7 @@
     </div>
     <script>
         let canvas, ctx, landData = [], bounds, scale = 1, offsetX = 0, offsetY = 0, selectedCode = null, hoveredCode = null;
-        let mode = 'potential';
+        let mode = 'raw';
         let weights = { far: 40, form: 30, area: 30 };
 
         // FAR参考值
@@ -232,13 +236,49 @@
         function renderList(features) {
             const list = document.getElementById('list');
             list.innerHTML = '';
+
+            // 原始用地图模式 - 显示步骤说明
+            if (mode === 'raw') {
+                list.innerHTML = `
+                    <div style="padding:20px;font-size:13px;line-height:2;color:#666;">
+                        <div style="font-weight:600;margin-bottom:12px;">原始数据导入流程</div>
+                        <div style="margin-bottom:16px;">
+                            <span style="background:#000;color:#fff;padding:2px 8px;font-size:11px;margin-right:8px;">步骤1</span>
+                            <span>获取原始DWG格式用地数据</span>
+                        </div>
+                        <div style="margin-bottom:16px;">
+                            <span style="background:#000;color:#fff;padding:2px 8px;font-size:11px;margin-right:8px;">步骤2</span>
+                            <span>解析DWG中的地块边界线</span>
+                        </div>
+                        <div style="margin-bottom:16px;">
+                            <span style="background:#000;color:#fff;padding:2px 8px;font-size:11px;margin-right:8px;">步骤3</span>
+                            <span>提取地块属性（类型、面积等）</span>
+                        </div>
+                        <div>
+                            <span style="background:#000;color:#fff;padding:2px 8px;font-size:11px;margin-right:8px;">步骤4</span>
+                            <span>转换为网页可展示的矢量数据</span>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            // AI辅助编码和个性化规则模式 - 显示地块列表
             features.forEach(f => {
                 const p = f.properties;
                 const d = document.createElement('div');
                 d.className = 'land-item';
                 d.dataset.code = p.code;
                 const score = p.potential_score || 0;
-                d.innerHTML = '<div class="code">' + p.code + '</div><div class="meta"><span class="stat-badge stat-far">FAR ' + (p.adjusted_far || '-').toFixed(2) + '</span><span class="stat-badge stat-score">' + score.toFixed(0) + '分</span></div><div class="potential-bar"><div class="potential-fill" style="width:' + score + '%"></div></div>';
+
+                // AI辅助编码模式 - 只显示编码和用地类型
+                if (mode === 'ai-search') {
+                    d.innerHTML = '<div class="code">' + p.code + '</div><div class="meta"><span class="stat-badge">用地类型: ' + (p.layer || '-').split('_')[0] + '</span></div>';
+                }
+                // 个性化规则模式 - 显示完整信息
+                else {
+                    d.innerHTML = '<div class="code">' + p.code + '</div><div class="meta"><span class="stat-badge stat-far">FAR ' + (p.adjusted_far || '-').toFixed(2) + '</span><span class="stat-badge stat-score">' + score.toFixed(0) + '分</span></div><div class="potential-bar"><div class="potential-fill" style="width:' + score + '%"></div></div>';
+                }
                 d.onclick = () => selectLand(p.code);
                 list.appendChild(d);
             });
@@ -287,38 +327,66 @@
                 const score = p.potential_score || 50;
                 let fillColor;
                 if (mode === 'potential') {
+                    // 个性化规则模式 - 按潜力评分着色
                     const col = getPotentialColor(score);
                     const isSelected = p.code === selectedCode;
                     const isHovered = p.code === hoveredCode;
                     const alpha = isSelected ? 0.8 : (isHovered ? 0.6 : 0.4);
                     ctx.fillStyle = 'rgba(' + col[0] + ',' + col[1] + ',' + col[2] + ',' + alpha + ')';
                     ctx.strokeStyle = isSelected ? '#e74c3c' : (isHovered ? '#333' : '#666');
-                } else {
-                    const colorMap = {1:[255,0,0],2:[255,255,0],3:[0,255,0],4:[0,255,255],7:[255,255,255],13:[255,0,255],30:[255,165,0],94:[144,238,144],111:[255,192,203],152:[221,160,221],211:[135,206,235],254:[0,0,0]};
-                    const col = colorMap[p.color]||[135,206,235];
-                    ctx.fillStyle = 'rgba('+col[0]+','+col[1]+','+col[2]+',0.4)';
-                    ctx.strokeStyle = p.code===selectedCode?'#e74c3c':'#666';
-                }
-                ctx.lineWidth = p.code===selectedCode?3:1;
-                ctx.fill();
-                ctx.stroke();
+                    ctx.lineWidth = p.code===selectedCode?3:1;
+                    ctx.fill();
+                    ctx.stroke();
 
-                if (mode === 'potential') {
+                    // 显示标签
                     const c = toScreen(p.centroid[0],p.centroid[1]);
                     ctx.fillStyle = p.code===selectedCode?'#fff':'#333';
                     ctx.font = (p.code===selectedCode?14:12)+'px sans-serif';
                     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
                     ctx.fillText(p.code, c.x, c.y);
+                } else if (mode === 'ai-search') {
+                    // AI辅助编码模式 - 显示地块编码，便于AI辅助检索定位
+                    const colorMap = {1:[255,0,0],2:[255,255,0],3:[0,255,0],4:[0,255,255],7:[255,255,255],13:[255,0,255],30:[255,165,0],94:[144,238,144],111:[255,192,203],152:[221,160,221],211:[135,206,235],254:[0,0,0]};
+                    const col = colorMap[p.color]||[135,206,235];
+                    const isSelected = p.code === selectedCode;
+                    const isHovered = p.code === hoveredCode;
+                    ctx.fillStyle = 'rgba('+col[0]+','+col[1]+','+col[2]+',0.3)';
+                    ctx.strokeStyle = isSelected ? '#e74c3c' : (isHovered ? '#333' : '#999');
+                    ctx.lineWidth = p.code===selectedCode?3:1;
+                    ctx.fill();
+                    ctx.stroke();
+
+                    // 显示所有标签
+                    const c = toScreen(p.centroid[0],p.centroid[1]);
+                    ctx.fillStyle = '#333';
+                    ctx.font = '11px sans-serif';
+                    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                    ctx.fillText(p.code, c.x, c.y);
+                } else {
+                    // 原始用地图模式 - 仅显示用地类型颜色，无标签
+                    const colorMap = {1:[255,0,0],2:[255,255,0],3:[0,255,0],4:[0,255,255],7:[255,255,255],13:[255,0,255],30:[255,165,0],94:[144,238,144],111:[255,192,203],152:[221,160,221],211:[135,206,235],254:[0,0,0]};
+                    const col = colorMap[p.color]||[135,206,235];
+                    const isSelected = p.code === selectedCode;
+                    const isHovered = p.code === hoveredCode;
+                    ctx.fillStyle = 'rgba('+col[0]+','+col[1]+','+col[2]+',0.6)';
+                    ctx.strokeStyle = isSelected ? '#e74c3c' : (isHovered ? '#333' : '#666');
+                    ctx.lineWidth = p.code===selectedCode?3:1;
+                    ctx.fill();
+                    ctx.stroke();
                 }
             });
         }
 
         function setMode(m) {
             mode = m;
+            document.getElementById('btn-raw').classList.toggle('active', m==='raw');
+            document.getElementById('btn-ai').classList.toggle('active', m==='ai-search');
             document.getElementById('btn-potential').classList.toggle('active', m==='potential');
-            document.getElementById('btn-landuse').classList.toggle('active', m==='landuse');
             document.getElementById('legend').style.display = m==='potential' ? 'block' : 'none';
+            document.getElementById('weight-panel').style.display = m==='potential' ? 'block' : 'none';
+            document.getElementById('search').style.display = m==='raw' ? 'none' : 'block';
             resizeCanvas();
+            renderList(landData);
         }
 
         function selectLand(code) {
