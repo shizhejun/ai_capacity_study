@@ -137,6 +137,18 @@
             <div class="legend-gradient"></div>
             <div class="legend-labels"><span>低</span><span>中</span><span>高</span></div>
         </div>
+        <div id="strategy-summary" style="display:none;position:absolute;top:16px;left:16px;background:#fff;border:1px solid #ddd;padding:12px;z-index:100;min-width:200px;font-size:10px;line-height:1.6;">
+            <div style="font-weight:600;margin-bottom:8px;">📊 当前测算参数</div>
+            <div id="summary-params"></div>
+            <div style="margin-top:8px;padding-top:8px;border-top:1px solid #ddd;">
+                <div style="font-weight:600;margin-bottom:4px;">🏠 可实现项目</div>
+                <div id="summary-feasible" style="color:#27ae60;font-weight:bold;"></div>
+            </div>
+            <div style="margin-top:8px;">
+                <div style="font-weight:600;margin-bottom:4px;">📋 各地块需要FAR</div>
+                <div id="summary-fars" style="max-height:150px;overflow-y:auto;"></div>
+            </div>
+        </div>
         <div id="zoom-controls">
             <button onclick="zoomIn()">+</button>
             <button onclick="zoomOut()">−</button>
@@ -641,6 +653,7 @@
             document.getElementById('btn-potential').classList.toggle('active', m==='potential');
             document.getElementById('btn-strategy').classList.toggle('active', m==='strategy');
             document.getElementById('legend').style.display = m==='potential' ? 'block' : 'none';
+            document.getElementById('strategy-summary').style.display = m==='strategy' ? 'block' : 'none';
             document.getElementById('weight-panel').style.display = (m==='potential' || m==='strategy') ? 'block' : 'none';
             document.getElementById('search').style.display = m==='raw' ? 'none' : 'block';
 
@@ -710,8 +723,8 @@
                     <div style="font-size:10px;font-weight:600;color:#333;margin-bottom:6px;">💰 开发成本参数</div>
                     <div class="weight-row" style="margin-bottom:8px;">
                         <label style="width:80px;">土地价格</label>
-                        <input type="range" id="land-price" min="1000" max="10000" value="3000" style="flex:1;">
-                        <span id="land-price-val" style="width:50px;text-align:right;font-size:10px;">3000元/m²</span>
+                        <input type="range" id="land-price" min="1000" max="30000" value="3000" style="flex:1;">
+                        <span id="land-price-val" style="width:60px;text-align:right;font-size:10px;">3000元/m²</span>
                     </div>
                     <div class="weight-row" style="margin-bottom:8px;">
                         <label style="width:80px;">建安成本</label>
@@ -823,6 +836,32 @@
             html += `</div>`;
 
             document.getElementById('strategy-results').innerHTML = html;
+
+            // 更新右侧地图摘要
+            const summaryParams = document.getElementById('summary-params');
+            const summaryFeasible = document.getElementById('summary-feasible');
+            const summaryFars = document.getElementById('summary-fars');
+
+            summaryParams.innerHTML = `
+                <div>土地: ${landPrice}元/m²</div>
+                <div>建安: ${buildCost}元/m²</div>
+                <div>利润: ${(profitMargin*100).toFixed(0)}%</div>
+                <div>售价: ${salePrice}元/m²</div>
+            `;
+
+            summaryFeasible.textContent = `${feasibleCount}/${residentialLands.length}块`;
+
+            let farsHtml = '';
+            results.slice(0, 10).forEach(p => {
+                const farDisplay = p.required_far === Infinity ? 'N/A' : p.required_far.toFixed(2);
+                const color = p.is_feasible ? '#27ae60' : '#e74c3c';
+                farsHtml += `<div style="color:${color};margin-bottom:2px;">${p.code}: FAR ${farDisplay}</div>`;
+            });
+            if (results.length > 10) {
+                farsHtml += `<div style="color:#999;">+${results.length-10}块...</div>`;
+            }
+            summaryFars.innerHTML = farsHtml;
+
             render();
         }
 
