@@ -503,8 +503,13 @@
 
             // 策略模式 - 左侧面板显示总体统计
             if (mode === 'strategy') {
-                const totalVolume = residentialLands.reduce((sum, f) => sum + (f.properties.allocated_volume || 0), 0);
-                const feasibleCount = residentialLands.filter(f => f.properties.is_feasible).length;
+                const residentialList = landData.filter(f => {
+                    const code = f.properties.code || '';
+                    const layer = f.properties.layer || '';
+                    return code.includes('R') || layer.includes('R');
+                });
+                const totalVolume = residentialList.reduce((sum, f) => sum + (f.properties.allocated_volume || 0), 0);
+                const feasibleCount = residentialList.filter(f => f.properties.is_feasible).length;
 
                 list.innerHTML = `
                     <div style="padding:12px;font-size:10px;">
@@ -512,11 +517,11 @@
                         <table style="width:100%;border-collapse:collapse;">
                             <tr style="border-bottom:1px solid #eee;">
                                 <td style="padding:4px 0;color:#666;">总地块</td>
-                                <td style="text-align:right;font-weight:600;">${residentialLands.length}块</td>
+                                <td style="text-align:right;font-weight:600;">${residentialList.length}块</td>
                             </tr>
                             <tr style="border-bottom:1px solid #eee;">
                                 <td style="padding:4px 0;color:#666;">总面积</td>
-                                <td style="text-align:right;font-weight:600;">${(residentialLands.reduce((s,f)=>s+f.properties.area_ha,0)).toFixed(1)}公顷</td>
+                                <td style="text-align:right;font-weight:600;">${(residentialList.reduce((s,f)=>s+f.properties.area_ha,0)).toFixed(1)}公顷</td>
                             </tr>
                             <tr style="border-bottom:1px solid #eee;">
                                 <td style="padding:4px 0;color:#666;">总分配体量</td>
@@ -697,51 +702,42 @@
                         if (!refCentroid || refCentroid.length < 2) return;
                         const refPt = toScreen(refCentroid[0], refCentroid[1]);
 
-                        // 绘制虚线
+                        // 绘制细半透明实线
                         ctx.beginPath();
-                        ctx.setLineDash([5, 5]);
-                        ctx.strokeStyle = color;
-                        ctx.lineWidth = 1;
+                        ctx.strokeStyle = color + '99'; // 60%透明
+                        ctx.lineWidth = 0.8;
                         ctx.moveTo(landPt.x, landPt.y);
                         ctx.lineTo(refPt.x, refPt.y);
                         ctx.stroke();
-                        ctx.setLineDash([]);
 
-                        // 绘制参考点
+                        // 绘制小圆点（无白边）
                         ctx.beginPath();
-                        ctx.arc(refPt.x, refPt.y, 6, 0, Math.PI * 2);
+                        ctx.arc(refPt.x, refPt.y, 3, 0, Math.PI * 2);
                         ctx.fillStyle = color;
                         ctx.fill();
-                        ctx.strokeStyle = '#fff';
-                        ctx.lineWidth = 2;
-                        ctx.stroke();
 
                         // 标注名称
                         ctx.fillStyle = color;
-                        ctx.font = '9px sans-serif';
+                        ctx.font = '8px sans-serif';
                         ctx.textAlign = 'center';
-                        ctx.fillText(refName, refPt.x, refPt.y - 12);
-
-                        // 标注距离
-                        const midX = (landPt.x + refPt.x) / 2;
-                        const midY = (landPt.y + refPt.y) / 2;
-                        const dist = Math.sqrt(Math.pow(refCentroid[0] - landCentroid[0], 2) + Math.pow(refCentroid[1] - landCentroid[1], 2));
-                        ctx.fillStyle = '#333';
-                        ctx.fillText(Math.round(dist) + 'm', midX, midY - 5);
+                        ctx.fillText(refName, refPt.x, refPt.y - 8);
                     };
 
-                    // 绘制地铁站
-                    if (p.nearest_metro_idx >= 0 && refMetroStations[p.nearest_metro_idx]) {
-                        drawRefPoint(refMetroStations[p.nearest_metro_idx], '地铁' + (p.min_metro_dist < 500 ? '+30' : p.min_metro_dist < 1000 ? '+20' : '+10'), '#e74c3c', 'metro');
-                    }
-                    // 绘制公园
-                    if (p.nearest_park_idx >= 0 && refParks[p.nearest_park_idx]) {
-                        drawRefPoint(refParks[p.nearest_park_idx], '公园' + (p.min_park_dist < 300 ? '+20' : '+10'), '#27ae60', 'park');
-                    }
-                    // 绘制公服设施
-                    if (p.nearest_public_idx >= 0 && refPublicServices[p.nearest_public_idx]) {
-                        drawRefPoint(refPublicServices[p.nearest_public_idx], '公服+15', '#3498db', 'public');
-                    }
+                    // 绘制所有地铁站（贡献分数的）
+                    (p.metro_details || []).filter(pd => pd.dist < 1500).forEach(pd => {
+                        const score = pd.dist < 500 ? '+30' : pd.dist < 1000 ? '+20' : '+10';
+                        drawRefPoint(refMetroStations[pd.idx], '地铁' + score, '#e74c3c', 'metro');
+                    });
+                    // 绘制所有绿地/公园/体育公园（贡献分数的）
+                    (p.park_details || []).filter(pd => pd.dist < 1500).forEach(pd => {
+                        const score = pd.dist < 300 ? '+20' : pd.dist < 500 ? '+14' : pd.dist < 1000 ? '+8' : '+4';
+                        drawRefPoint(refParks[pd.idx], pd.name + score, '#27ae60', 'park');
+                    });
+                    // 绘制所有公服设施（贡献分数的）
+                    (p.public_details || []).filter(pd => pd.dist < 1000).forEach(pd => {
+                        const score = pd.dist < 500 ? '+15' : pd.dist < 800 ? '+10' : '+6';
+                        drawRefPoint(refPublicServices[pd.idx], pd.name + score, '#3498db', 'public');
+                    });
                 }
             }
         }
@@ -921,62 +917,84 @@
 
                 let qualityScore = 0;
 
-                // 地铁站加分：越近越高
+                // ========== 地铁可达性评分：考虑所有站点，按距离衰减加权 ==========
+                let metroScore = 0;
                 let minMetro = Infinity;
                 let nearestMetroIdx = -1;
+                const metroDetails = []; // {idx, dist, name} for display
                 refMetroStations.forEach((m, i) => {
                     const d = Math.sqrt(Math.pow(centroid[0] - m[0], 2) + Math.pow(centroid[1] - m[1], 2));
+                    metroDetails.push({ idx: i, dist: d, name: refMetroNames[i] });
                     if (d < minMetro) {
                         minMetro = d;
                         nearestMetroIdx = i;
                     }
+                    // 距离衰减：500m内满分，1000m内70%，1500m内40%
+                    if (d < 500) metroScore += 30;
+                    else if (d < 1000) metroScore += 20;
+                    else if (d < 1500) metroScore += 10;
                 });
-                if (minMetro < 500) qualityScore += 30;
-                else if (minMetro < 1000) qualityScore += 20;
-                else if (minMetro < 1500) qualityScore += 10;
+                qualityScore += Math.min(metroScore, 40); // 地铁最高40分
+                p.min_metro_dist = minMetro;
+                p.nearest_metro_idx = nearestMetroIdx;
+                p.metro_details = metroDetails;
 
-                // 公园加分
+                // ========== 绿地可达性评分：考虑所有绿地、水体、体育公园 ==========
+                let parkScore = 0;
                 let minPark = Infinity;
                 let nearestParkIdx = -1;
+                const parkDetails = []; // {idx, dist, name} for display
                 refParks.forEach((g, i) => {
                     const d = Math.sqrt(Math.pow(centroid[0] - g[0], 2) + Math.pow(centroid[1] - g[1], 2));
+                    parkDetails.push({ idx: i, dist: d, name: refParkNames[i] });
                     if (d < minPark) {
                         minPark = d;
                         nearestParkIdx = i;
                     }
+                    // 公园评分：300m内满分，500m内70%，1000m内40%，1500m内20%
+                    if (d < 300) parkScore += 20;
+                    else if (d < 500) parkScore += 14;
+                    else if (d < 1000) parkScore += 8;
+                    else if (d < 1500) parkScore += 4;
                 });
-                if (minPark < 300) qualityScore += 20;
-                else if (minPark < 500) qualityScore += 10;
+                qualityScore += Math.min(parkScore, 35); // 公园最高35分
+                p.min_park_dist = minPark;
+                p.nearest_park_idx = nearestParkIdx;
+                p.park_details = parkDetails; // 存储所有公园距离详情
 
-                // 公服加分
+                // ========== 公服可达性评分：考虑所有公服设施 ==========
+                let publicScore = 0;
                 let minPublic = Infinity;
                 let nearestPublicIdx = -1;
+                const publicDetails = [];
                 refPublicServices.forEach((a, i) => {
                     const d = Math.sqrt(Math.pow(centroid[0] - a[0], 2) + Math.pow(centroid[1] - a[1], 2));
+                    publicDetails.push({ idx: i, dist: d, name: refPublicNames[i] });
                     if (d < minPublic) {
                         minPublic = d;
                         nearestPublicIdx = i;
                     }
+                    // 公服评分：500m内满分，800m内70%，1000m内40%
+                    if (d < 500) publicScore += 15;
+                    else if (d < 800) publicScore += 10;
+                    else if (d < 1000) publicScore += 6;
                 });
-                if (minPublic < 500) qualityScore += 15;
+                qualityScore += Math.min(publicScore, 25); // 公服最高25分
+                p.min_public_dist = minPublic;
+                p.nearest_public_idx = nearestPublicIdx;
+                p.public_details = publicDetails;
 
-                // 形态加分：越规整越高
+                // ========== 形态加分：越规整越高 ==========
                 const formFactor = p.form_factor || 0.5;
                 qualityScore += formFactor * 15; // 0-15分
 
-                // 面积调整：大地块适当加分（开发规模效应）
+                // ========== 面积调整：大地块适当加分（开发规模效应）==========
                 const areaHa = p.area_ha || 5;
                 if (areaHa >= 5 && areaHa <= 15) qualityScore += 10;
                 else if (areaHa > 15) qualityScore += 5;
                 else if (areaHa < 2) qualityScore -= 5;
 
                 p.quality_score = qualityScore;
-                p.min_metro_dist = minMetro;
-                p.min_park_dist = minPark;
-                p.min_public_dist = minPublic;
-                p.nearest_metro_idx = nearestMetroIdx;
-                p.nearest_park_idx = nearestParkIdx;
-                p.nearest_public_idx = nearestPublicIdx;
             });
         }
 
@@ -992,7 +1010,7 @@
             });
 
             if (residentialLands.length === 0) {
-                document.getElementById('strategy-results').innerHTML = '未检测到居住用地';
+                list.innerHTML = '<div style="padding:12px;color:#e74c3c;">未检测到居住用地</div>';
                 return;
             }
 
@@ -1055,27 +1073,6 @@
                 }
             });
 
-            // 显示结果
-            let html = `居住用地: ${residentialLands.length}块<br>`;
-            html += `总面积: ${totalAreaHa.toFixed(2)}公顷<br>`;
-            html += `可实现: ${feasibleCount}/${residentialLands.length}块<br>`;
-            html += `可实现面积: ${totalFeasibleArea.toFixed(2)}公顷<br>`;
-            html += `<div style="margin-top:8px;">禀赋分布:</div>`;
-
-            // 按禀赋分数排序并显示
-            const sorted = [...residentialLands].sort((a, b) => (b.properties.quality_score || 0) - (a.properties.quality_score || 0));
-            sorted.forEach(f => {
-                const p = f.properties;
-                html += `<div style="color:${p.is_feasible ? '#27ae60' : '#e74c3c'};margin-bottom:2px;">`;
-                html += `${p.code}: ${(p.quality_score||0).toFixed(0)}分 `;
-                html += `(地铁${(p.min_metro_dist||0).toFixed(0)}m `;
-                html += `公园${(p.min_park_dist||0).toFixed(0)}m `;
-                html += `公服${(p.min_public_dist||0).toFixed(0)}m)`;
-                html += `</div>`;
-            });
-
-            document.getElementById('strategy-results').innerHTML = html;
-
             // 更新右侧摘要
             updateStrategySummary(landPrice, buildCost, profitMargin, salePrice, totalAllocatedVolume, residentialLands, feasibleCount);
             render();
@@ -1090,8 +1087,11 @@
                 <div>土地: ${landPrice}元/m²</div>
                 <div>建安: ${buildCost}元/m²</div>
                 <div>利润: ${(profitMargin*100).toFixed(0)}%</div>
-                <div>总可分配体量:</div>
+                <div>目标开发体量:</div>
                 <div style="font-weight:bold;color:#e74c3c;">${(totalVolume/10000).toFixed(1)}万m²</div>
+                <div style="margin-top:8px;font-size:9px;color:#666;">
+                    <div>参考设施: 地铁${refMetroStations.length}个 | 公园${refParks.length}个(G1:${refParkNames.filter(n=>n.includes('G1')).length} G2:${refParkNames.filter(n=>n.includes('G2')).length} A4:${refParkNames.filter(n=>n.includes('A4')).length}) | 公服${refPublicServices.length}个</div>
+                </div>
             `;
 
             summaryFeasible.textContent = `${feasibleCount}/${residentialLands.length}块可行`;
@@ -1100,14 +1100,11 @@
             const sorted = [...residentialLands].sort((a, b) => (b.properties.quality_score || 0) - (a.properties.quality_score || 0));
 
             let farsHtml = '';
-            sorted.slice(0, 10).forEach(f => {
+            sorted.forEach(f => {
                 const p = f.properties;
                 const color = p.is_feasible ? '#27ae60' : '#e74c3c';
                 farsHtml += `<div style="color:${color};margin-bottom:2px;">${p.code}: FAR ${(p.allocated_far || 0).toFixed(2)} (禀赋${(p.quality_score||0).toFixed(0)})</div>`;
             });
-            if (sorted.length > 10) {
-                farsHtml += `<div style="color:#999;">+${sorted.length-10}块...</div>`;
-            }
             summaryFars.innerHTML = farsHtml;
         }
 
@@ -1211,12 +1208,25 @@
                     <div class="pot-row"><span>分配FAR</span><span class="pot-value" style="color:${p.is_feasible ? '#27ae60' : '#e74c3c'};font-weight:bold;">${allocatedFar.toFixed(2)}</span></div>
                     <div class="pot-row"><span>规划上限FAR</span><span class="pot-value">${baseFar.toFixed(2)}</span></div>
                     <div class="pot-row"><span>可行性</span><span class="pot-value" style="color:${p.is_feasible ? '#27ae60' : '#e74c3c'};font-weight:bold;">${p.is_feasible ? '✓ 可实现' : '✗ 需调整'}</span></div>
+                    ${!p.is_feasible ? `<div class="pot-row" style="font-size:9px;color:#e74c3c;">分配FAR超出上限${(allocatedFar - baseFar).toFixed(2)}，建议降低开发强度或调高规划上限</div>` : ''}
                     <div style="margin-top:8px;padding-top:8px;border-top:1px solid #ccc;font-size:9px;color:#666;">
                         <div style="font-weight:600;margin-bottom:4px;">禀赋来源</div>
-                        <div>${p.min_metro_dist < 500 ? '+30分' : p.min_metro_dist < 1000 ? '+20分' : p.min_metro_dist < 1500 ? '+10分' : '0分'} 地铁 (${(p.min_metro_dist||0).toFixed(0)}m)${p.nearest_metro_idx >= 0 && refMetroNames[p.nearest_metro_idx] ? ' - ' + refMetroNames[p.nearest_metro_idx] : ''}</div>
-                        <div>${p.min_park_dist < 300 ? '+20分' : p.min_park_dist < 500 ? '+10分' : '0分'} 公园 (${(p.min_park_dist||0).toFixed(0)}m)${p.nearest_park_idx >= 0 && refParkNames[p.nearest_park_idx] ? ' - ' + refParkNames[p.nearest_park_idx] : ''}</div>
-                        <div>${p.min_public_dist < 500 ? '+15分' : '0分'} 公服 (${(p.min_public_dist||0).toFixed(0)}m)${p.nearest_public_idx >= 0 && refPublicNames[p.nearest_public_idx] ? ' - ' + refPublicNames[p.nearest_public_idx] : ''}</div>
-                        <div>形态: +${((p.form_factor||0) * 15).toFixed(0)}分 (${((p.form_factor||0)*100).toFixed(0)}%规整)</div>
+                        <div style="color:#3498db;">地铁可达:</div>
+                        ${(p.metro_details || []).filter(pd => pd.dist < 1500).sort((a,b) => a.dist - b.dist).slice(0, 5).map(pd => {
+                            const score = pd.dist < 500 ? '+30' : pd.dist < 1000 ? '+20' : '+10';
+                            return `<div style="margin-left:8px;">${score} ${(pd.dist||0).toFixed(0)}m ${pd.name || ''}</div>`;
+                        }).join('') || '<div style="margin-left:8px;color:#999;">无</div>'}
+                        <div style="color:#27ae60;margin-top:4px;">绿地可达:</div>
+                        ${(p.park_details || []).filter(pd => pd.dist < 1500).sort((a,b) => a.dist - b.dist).slice(0, 8).map(pd => {
+                            const score = pd.dist < 300 ? '+20' : pd.dist < 500 ? '+14' : pd.dist < 1000 ? '+8' : '+4';
+                            return `<div style="margin-left:8px;">${score} ${(pd.dist||0).toFixed(0)}m ${pd.name || ''}</div>`;
+                        }).join('') || '<div style="margin-left:8px;color:#999;">无</div>'}
+                        <div style="color:#e67e22;margin-top:4px;">公服可达:</div>
+                        ${(p.public_details || []).filter(pd => pd.dist < 1000).sort((a,b) => a.dist - b.dist).slice(0, 5).map(pd => {
+                            const score = pd.dist < 500 ? '+15' : pd.dist < 800 ? '+10' : '+6';
+                            return `<div style="margin-left:8px;">${score} ${(pd.dist||0).toFixed(0)}m ${pd.name || ''}</div>`;
+                        }).join('') || '<div style="margin-left:8px;color:#999;">无</div>'}
+                        <div style="margin-top:4px;">形态: +${((p.form_factor||0) * 15).toFixed(0)}分 (${((p.form_factor||0)*100).toFixed(0)}%规整)</div>
                         <div>面积: ${p.area_ha >= 5 && p.area_ha <= 15 ? '+10分' : p.area_ha > 15 ? '+5分' : '-5分'} (${p.area_ha.toFixed(1)}公顷)</div>
                     </div>
                 `;
