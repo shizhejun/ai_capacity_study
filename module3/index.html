@@ -363,14 +363,12 @@
                     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
                     ctx.fillText(p.code, c.x, c.y);
                 } else {
-                    // 原始用地图模式 - 仅显示用地类型颜色，无标签
+                    // 原始用地图模式 - 仅显示用地类型颜色，无标签，无交互
                     const colorMap = {1:[255,0,0],2:[255,255,0],3:[0,255,0],4:[0,255,255],7:[255,255,255],13:[255,0,255],30:[255,165,0],94:[144,238,144],111:[255,192,203],152:[221,160,221],211:[135,206,235],254:[0,0,0]};
                     const col = colorMap[p.color]||[135,206,235];
-                    const isSelected = p.code === selectedCode;
-                    const isHovered = p.code === hoveredCode;
                     ctx.fillStyle = 'rgba('+col[0]+','+col[1]+','+col[2]+',0.6)';
-                    ctx.strokeStyle = isSelected ? '#e74c3c' : (isHovered ? '#333' : '#666');
-                    ctx.lineWidth = p.code===selectedCode?3:1;
+                    ctx.strokeStyle = '#666';
+                    ctx.lineWidth = 1;
                     ctx.fill();
                     ctx.stroke();
                 }
@@ -427,6 +425,8 @@
         }
 
         function onCanvasClick(e) {
+            // 原始用地图模式 - 不允许交互
+            if (mode === 'raw') return;
             const rect = canvas.getBoundingClientRect();
             const mx = e.clientX-rect.left, my = e.clientY-rect.top;
             const wx = (mx-offsetX)/scale, wy = (canvas.height-my-offsetY)/scale;
@@ -436,6 +436,8 @@
         }
 
         function onCanvasMouseMove(e) {
+            // 原始用地图模式 - 禁用悬停效果
+            if (mode === 'raw') return;
             const rect = canvas.getBoundingClientRect();
             const mx = e.clientX-rect.left, my = e.clientY-rect.top;
             const wx = (mx-offsetX)/scale, wy = (canvas.height-my-offsetY)/scale;
