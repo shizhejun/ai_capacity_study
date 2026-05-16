@@ -70,7 +70,7 @@
         </div>
         <div id="mode-toggle">
             <button onclick="setMode('raw')" class="active" id="btn-raw">原始用地图</button>
-            <button onclick="setMode('ai-search')" id="btn-ai">AI辅助编码</button>
+            <button onclick="setMode('ai-search')" id="btn-ai">AI辅助建库</button>
             <button onclick="setMode('potential')" id="btn-potential">个性化规则</button>
             <button onclick="setMode('strategy')" id="btn-strategy">居住开发策略</button>
         </div>
@@ -492,36 +492,11 @@
                 const totalVolume = residentialList.reduce((sum, f) => sum + (f.properties.allocated_volume || 0), 0);
                 const feasibleCount = residentialList.filter(f => f.properties.is_feasible).length;
 
-                list.innerHTML = `
-                    <div style="padding:12px;font-size:10px;">
-                        <div style="font-weight:600;margin-bottom:10px;color:#000;">📊 体量分配总览</div>
-                        <table style="width:100%;border-collapse:collapse;">
-                            <tr style="border-bottom:1px solid #eee;">
-                                <td style="padding:4px 0;color:#666;">总地块</td>
-                                <td style="text-align:right;font-weight:600;">${residentialList.length}块</td>
-                            </tr>
-                            <tr style="border-bottom:1px solid #eee;">
-                                <td style="padding:4px 0;color:#666;">总面积</td>
-                                <td style="text-align:right;font-weight:600;">${(residentialList.reduce((s,f)=>s+f.properties.area_ha,0)).toFixed(1)}公顷</td>
-                            </tr>
-                            <tr style="border-bottom:1px solid #eee;">
-                                <td style="padding:4px 0;color:#666;">总分配体量</td>
-                                <td style="text-align:right;font-weight:600;color:#e74c3c;">${(totalVolume/10000).toFixed(1)}万m²</td>
-                            </tr>
-                            <tr style="border-bottom:1px solid #eee;">
-                                <td style="padding:4px 0;color:#666;">可行项目</td>
-                                <td style="text-align:right;font-weight:600;color:#27ae60;">${feasibleCount}块</td>
-                            </tr>
-                        </table>
-                        <div style="margin-top:12px;padding-top:10px;border-top:1px solid #ddd;font-size:9px;color:#999;">
-                            💡 点击右侧地图地块<br>查看禀赋来源和距离
-                        </div>
-                    </div>
-                `;
+                list.innerHTML = '';
                 return;
             }
 
-            // AI辅助编码和个性化规则模式 - 显示地块列表
+            // AI辅助建库和个性化规则模式 - 显示地块列表
             features.forEach(f => {
                 const p = f.properties;
                 const d = document.createElement('div');
@@ -529,7 +504,7 @@
                 d.dataset.code = p.code;
                 const score = p.potential_score || 0;
 
-                // AI辅助编码模式 - 只显示编码和用地类型
+                // AI辅助建库模式 - 只显示编码和用地类型
                 if (mode === 'ai-search') {
                     d.innerHTML = '<div class="code">' + p.code + '</div><div class="meta"><span class="stat-badge">' + getLandUseName(p.layer || p.code) + '</span></div>';
                 }
@@ -603,7 +578,7 @@
                     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
                     ctx.fillText(p.code, c.x, c.y);
                 } else if (mode === 'ai-search') {
-                    // AI辅助编码模式 - 显示地块编码，便于AI辅助检索定位
+                    // AI辅助建库模式 - 显示地块编码，便于AI辅助检索定位
                     const colorMap = {1:[255,0,0],2:[255,255,0],3:[0,255,0],4:[0,255,255],7:[255,255,255],13:[255,0,255],30:[255,165,0],94:[144,238,144],111:[255,192,203],152:[221,160,221],211:[135,206,235],254:[0,0,0]};
                     const col = colorMap[p.color]||[135,206,235];
                     const isSelected = p.code === selectedCode;
@@ -752,8 +727,9 @@
                 // 个性化规则模式 - 显示评分规则
                 document.getElementById('weight-panel').style.display = 'block';
                 resetWeightPanel();
+                renderList(landData);
             } else if (m === 'ai-search') {
-                // AI辅助编码模式 - 显示导入流程
+                // AI辅助建库模式 - 显示导入流程
                 document.getElementById('weight-panel').style.display = 'block';
                 document.getElementById('weight-panel').innerHTML = `
                     <div style="padding:12px;font-size:11px;line-height:1.8;color:#666;">
@@ -767,6 +743,7 @@
                         </div>
                     </div>
                 `;
+                renderList(landData);
             }
             // 原始用地图模式: 清空左侧列表
             if (m === 'raw') {
@@ -1255,7 +1232,7 @@
                     </div>
                 `;
             } else if (mode === 'ai-search') {
-                // AI辅助编码模式 - 只显示基本信息
+                // AI辅助建库模式 - 只显示基本信息
                 potentialSection.innerHTML = `
                     <h3>地块信息</h3>
                     <div class="pot-row"><span>用地编码</span><span class="pot-value">${p.code}</span></div>
