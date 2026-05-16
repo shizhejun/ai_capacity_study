@@ -663,11 +663,8 @@
 
 // 策略模式下显示分析面板
             if (m === 'strategy') {
-                console.log('Switching to strategy mode');
                 document.getElementById('weight-panel').innerHTML = getStrategyPanelHTML();
-                console.log('HTML set, waiting for timeout...');
                 setTimeout(() => {
-                    console.log('Timeout fired');
                     initStrategyEvents();
                     calculateQualityScore();
                     updateStrategyAnalysis();
@@ -758,18 +755,12 @@
         }
 
         function initStrategyEvents() {
-            console.log('initStrategyEvents called');
             const params = ['land-price', 'build-cost', 'profit-margin', 'sale-price'];
             params.forEach(id => {
                 const input = document.getElementById(id);
                 const val = document.getElementById(id + '-val');
-                console.log('Setting up', id, 'input:', input, 'val:', val);
-                if (!input || !val) {
-                    console.error('Element not found:', id);
-                    return;
-                }
+                if (!input || !val) return;
                 input.addEventListener('input', function() {
-                    console.log('Slider changed:', id, this.value);
                     val.textContent = this.value + (id === 'profit-margin' ? '%' : '元/m²');
                     updateStrategyAnalysis();
                 });
@@ -894,12 +885,23 @@
             const requiredProfitPerSqm = totalCostPerSqm * profitMargin; // 元/m²目标利润
             const targetSalePricePerSqm = totalCostPerSqm + requiredProfitPerSqm; // 元/m²需要的售价
 
-            // 3. 分配体量：根据禀赋分数比例分配总建筑面积
+            // 3. 计算总可开发体量（根据成本和目标利润）
+            // Volume = 土地总价 / (售价 - 建安成本 - 单位利润)
+            // 土地总价 = landPrice × 总占地面积
+            // 单位利润 = profitMargin × (floorLandCost + buildCost)
+            const profitPerSqm = profitMargin * (floorLandCost + buildCost);
+            const denominator = salePrice - buildCost - profitPerSqm;
+            let totalVolume = 0;
+            if (denominator > 0) {
+                totalVolume = (landPrice * totalAreaHa * 10000 * (1 + profitMargin)) / denominator;
+            }
+
+            // 4. 分配体量：根据禀赋分数比例分配总建筑面积
             let totalAllocatedVolume = 0;
             residentialLands.forEach(f => {
                 const p = f.properties;
                 const qualityRatio = (p.quality_score || 0) / totalQualityScore;
-                const allocatedVolume = qualityRatio * totalAreaHa * 10000 * avgFar; // m²
+                const allocatedVolume = qualityRatio * totalVolume; // m²
                 p.allocated_volume = allocatedVolume;
                 p.allocated_far = allocatedVolume / (p.area_ha * 10000); // 分配的容积率
                 totalAllocatedVolume += allocatedVolume;
