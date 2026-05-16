@@ -182,16 +182,21 @@
         function toggleLock(key) {
             locked[key] = !locked[key];
             const btn = document.getElementById('lock-' + key);
+            const slider = document.getElementById('w-' + key);
             if (locked[key]) {
                 btn.style.background = '#000';
                 btn.style.color = '#fff';
                 btn.textContent = '🔓';
                 btn.classList.add('active');
+                slider.disabled = true;
+                slider.style.opacity = '0.4';
             } else {
                 btn.style.background = '#fff';
                 btn.style.color = '#000';
                 btn.textContent = '🔒';
                 btn.classList.remove('active');
+                slider.disabled = false;
+                slider.style.opacity = '1';
             }
         }
 
@@ -201,16 +206,21 @@
             // 重置锁按钮UI
             ['far', 'form', 'area'].forEach(key => {
                 const btn = document.getElementById('lock-' + key);
+                const slider = document.getElementById('w-' + key);
                 if (key === 'far') {
                     btn.style.background = '#000';
                     btn.style.color = '#fff';
                     btn.textContent = '🔓';
                     btn.classList.add('active');
+                    slider.disabled = true;
+                    slider.style.opacity = '0.4';
                 } else {
                     btn.style.background = '#fff';
                     btn.style.color = '#000';
                     btn.textContent = '🔒';
                     btn.classList.remove('active');
+                    slider.disabled = false;
+                    slider.style.opacity = '1';
                 }
             });
             updateWeightDisplay();
@@ -230,6 +240,9 @@
                 const slider = document.getElementById('w-' + key);
                 const val = document.getElementById('w-' + key + '-val');
                 slider.addEventListener('input', function() {
+                    // 锁定的滑块不能动
+                    if (locked[key]) return;
+
                     const newVal = parseInt(this.value);
                     const oldVal = weights[key];
                     weights[key] = newVal;
