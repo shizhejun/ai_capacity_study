@@ -36,13 +36,12 @@
         header {
             text-align: center;
             margin-bottom: 40px;
-            padding: 40px 0 30px;
+            padding: 80px 0 60px;
             position: relative;
         }
         header h1 {
             font-size: 42px;
             letter-spacing: 8px;
-            margin-bottom: 30px;
             color: #000;
             line-height: 1.5;
         }
@@ -65,8 +64,8 @@
         }
         .modules {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
             max-width: 1100px;
         }
         .module {
@@ -217,11 +216,12 @@
         }
         footer {
             text-align: center;
-            padding-top: 30px;
+            padding-top: 60px;
+            padding-bottom: 30px;
         }
         footer p {
-            font-size: 8px;
-            letter-spacing: 2px;
+            font-size: 12px;
+            letter-spacing: 3px;
             color: #000;
         }
         @media (max-width: 900px) {
@@ -235,7 +235,6 @@
     <div class="container">
         <header>
             <h1>URBAN PLANNING INTELLIGENCE<br><span class="ai-text">AI+</span></h1>
-            <p class="subtitle">城市规划智能</p>
         </header>
 
         <div class="modules">
@@ -294,10 +293,26 @@
                 <div class="module-desc">智能化决策辅助<br>多源数据整合<br>交互式分析</div>
                 <div class="module-arrow">></div>
             </div>
+
+            <div class="module" onclick="location.href='module4/report.html'">
+                <div class="module-num">MODULE 04</div>
+                <div class="module-icon">
+                    <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="6" y="4" width="52" height="36" rx="3"/>
+                        <rect x="12" y="10" width="40" height="22" rx="1"/>
+                        <line x1="20" y1="46" x2="44" y2="46" stroke="#000" stroke-width="3"/>
+                        <line x1="32" y1="46" x2="32" y2="56" stroke="#000" stroke-width="3"/>
+                        <line x1="22" y1="56" x2="42" y2="56" stroke="#000" stroke-width="2"/>
+                    </svg>
+                </div>
+                <div class="module-title">技术方案汇报</div>
+                <div class="module-desc">系统架构总览<br>禀赋评价体系<br>体量分配算法</div>
+                <div class="module-arrow">></div>
+            </div>
         </div>
 
         <footer>
-            <p>POWERED BY ARTIFICIAL INTELLIGENCE</p>
+            <p>PRODUCT BY ZLAB</p>
         </footer>
     </div>
     <script>
