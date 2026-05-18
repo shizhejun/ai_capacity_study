@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI + 城市规划 | 关系梳理</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+            background: #fff;
+            color: #000;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .back-nav {
+            margin-bottom: 30px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            font-size: 14px;
+        }
+        .back-nav a {
+            color: #000;
+            text-decoration: none;
+        }
+        .back-nav a:hover {
+            text-decoration: underline;
+        }
+        .separator { color: #ccc; }
+        .section {
+            margin-bottom: 50px;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #000;
+        }
+        .step {
+            background: #fff;
+            border: 2px solid #000;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+        .step-num {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .step-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        .step-desc {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.8;
+        }
+        .step-tools {
+            margin-top: 15px;
+            font-size: 13px;
+            color: #666;
+        }
+        .step-tools span {
+            display: inline-block;
+            background: #f5f5f5;
+            padding: 4px 12px;
+            margin: 3px 3px 3px 0;
+        }
+        .enter-btn {
+            background: #000;
+            color: #fff;
+            border: none;
+            padding: 16px 40px;
+            font-size: 14px;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto;
+        }
+        .enter-btn:hover { background: #333; }
+        .note {
+            font-size: 13px;
+            color: #999;
+            margin-top: 40px;
+            text-align: center;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="back-nav">
+            <a href="../index.html">首页</a>
+            <span style="color: #666;">|</span>
+            <a href="intro.html">知识图谱 →</a>
+            <span style="color: #666;">|</span>
+            <a href="analysis.html">政策分析 →</a>
+            <span style="color: #666;">|</span>
+            <a href="case.html">案例演绎 →</a>
+        </div>
+
+        <h1>关系梳理</h1>
+        <p class="subtitle">技术路线说明</p>
+
+        <div class="section">
+            <h2 class="section-title">数据采集</h2>
+            <div class="step">
+                <div class="step-num">步骤 01</div>
+                <div class="step-title">网络数据采集</div>
+                <div class="step-desc">
+                    从公开网络渠道采集结构化或非结构化文本数据，包括政策文件、新闻报道、统计数据等多种信息来源。
+                </div>
+                <div class="step-tools">
+                    <span>多渠道信息整合</span>
+                    <span>多源数据汇聚</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">信息抽取</h2>
+            <div class="step">
+                <div class="step-num">步骤 02</div>
+                <div class="step-title">三元组抽取</div>
+                <div class="step-desc">
+                    从文本中识别实体（Subject）和（Object）以及它们之间的关系（Predicate），将非结构化文本转化为结构化知识表示。
+                </div>
+                <div class="step-tools">
+                    <span>文本语义分析</span>
+                    <span>结构化知识提取</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">知识图谱构建</h2>
+            <div class="step">
+                <div class="step-num">步骤 03</div>
+                <div class="step-title">图谱可视化</div>
+                <div class="step-desc">
+                    将三元组转换为节点-边图结构，核心实体作为中心节点，关联要素作为外围节点，形成层级分明的关系网络。
+                </div>
+                <div class="step-tools">
+                    <span>图谱可视化</span>
+                    <span>层级结构</span>
+                    <span>交互设计</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">交互分析</h2>
+            <div class="step">
+                <div class="step-num">步骤 04</div>
+                <div class="step-title">点击查询</div>
+                <div class="step-desc">
+                    通过用户交互行为（如点击、筛选）高亮相关节点与关联边，实现知识图谱的探索、关联分析与信息挖掘。
+                </div>
+                <div class="step-tools">
+                    <span>交互查询</span>
+                    <span>关联分析</span>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="enter-btn" onclick="location.href='intro.html'">案例展示 →</button>
+
+        <p class="note">本节说明如何从公开新闻中抽取结构化知识的原理<br>数据截至：2026年5月</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI + 城市规划 | 关系梳理</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #fff;
+            color: #000;
+            min-height: 100vh;
+        }
+        .header {
+            padding: 16px 24px;
+            border-bottom: 2px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header-left {
+            display: flex;
+            align-items: baseline;
+            gap: 16px;
+        }
+        .header h1 {
+            font-size: 16px;
+            font-weight: 700;
+        }
+        .header .subtitle {
+            font-size: 12px;
+            color: #666;
+        }
+        .back-nav {
+            font-size: 12px;
+            display: flex;
+            gap: 16px;
+        }
+        .back-nav a {
+            color: #000;
+            text-decoration: none;
+        }
+        .back-nav a:hover {
+            text-decoration: underline;
+        }
+        .content {
+            padding: 32px 24px;
+            max-width: 1100px;
+        }
+
+        /* 核心观点 */
+        .key-insights {
+            padding: 0 0 24px 0;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #000;
+        }
+        .key-insights h3 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            letter-spacing: 1px;
+        }
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .insight-item {
+            border-left: 3px solid #000;
+            padding-left: 12px;
+        }
+        .insight-num {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #000;
+        }
+        .insight-text {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        /* 橙色高亮核心信息 */
+        .highlight {
+            color: #E65100;
+            font-weight: 700;
+        }
+
+        /* 案例背景 */
+        .case-section {
+            margin-bottom: 40px;
+        }
+        .section-title {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+        .section-title span {
+            display: inline-block;
+            background: #000;
+            color: #fff;
+            padding: 4px 10px;
+            margin-right: 8px;
+        }
+
+        /* 场景卡片 */
+        .scenario-card {
+            border: 2px solid #000;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        .scenario-header {
+            display: flex;
+            align-items: baseline;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .scenario-tag {
+            background: #000;
+            color: #fff;
+            padding: 4px 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .scenario-title {
+            font-size: 15px;
+            font-weight: 700;
+        }
+        .scenario-content {
+            font-size: 13px;
+            line-height: 1.8;
+            color: #333;
+        }
+
+        /* 对比表格 */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            margin: 16px 0;
+        }
+        .comparison-table th {
+            background: #000;
+            color: #fff;
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        .comparison-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #eee;
+            vertical-align: top;
+            line-height: 1.6;
+        }
+        .comparison-table tr:nth-child(even) td {
+            background: #fafafa;
+        }
+        .comparison-table .before {
+            color: #999;
+        }
+        .comparison-table .after {
+            color: #000;
+            font-weight: 500;
+        }
+        .arrow {
+            color: #000;
+            font-weight: bold;
+        }
+
+        /* 效果指标 */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin: 20px 0;
+        }
+        .metric-box {
+            border: 1px solid #ddd;
+            padding: 16px;
+            text-align: center;
+        }
+        .metric-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #000;
+        }
+        .metric-label {
+            font-size: 11px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        /* 结论 */
+        .conclusion {
+            background: #f5f5f5;
+            border-left: 4px solid #000;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .conclusion h4 {
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+        .conclusion p {
+            font-size: 12px;
+            line-height: 1.8;
+            color: #333;
+        }
+
+        /* 左右对照布局 */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 80px 1fr;
+            gap: 0;
+            margin: 16px 0;
+        }
+        .compare-left, .compare-right {
+            padding: 16px;
+            border: 1px solid #ddd;
+        }
+        .compare-left {
+            background: #fafafa;
+        }
+        .compare-right {
+            background: #fff;
+        }
+        .compare-center {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0 8px;
+            font-size: 11px;
+            color: #666;
+            background: #f5f5f5;
+            border-top: 1px solid #ddd;
+            border-bottom: 1px solid #ddd;
+        }
+        .compare-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 16px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .compare-header.national {
+            background: #000;
+            color: #fff;
+        }
+        .compare-header.guangzhou {
+            background: #333;
+            color: #fff;
+        }
+        .compare-header.problem {
+            background: #666;
+            color: #fff;
+        }
+        .compare-header.solution {
+            background: #000;
+            color: #fff;
+        }
+        .compare-row {
+            display: grid;
+            grid-template-columns: 1fr 80px 1fr;
+            gap: 0;
+            margin-bottom: 12px;
+        }
+        .compare-row:last-child {
+            margin-bottom: 0;
+        }
+        .compare-row .compare-left,
+        .compare-row .compare-right {
+            padding: 12px;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+        .compare-row .compare-left {
+            border-right: none;
+        }
+        .compare-row .compare-right {
+            border-left: none;
+        }
+        .compare-row .compare-center {
+            background: #f0f0f0;
+            font-size: 10px;
+            font-weight: 600;
+            color: #000;
+            border: 1px solid #ddd;
+            border-left: none;
+            border-right: none;
+        }
+        .compare-section {
+            margin-bottom: 32px;
+        }
+        .compare-section-title {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #000;
+        }
+
+        /* 导航链接 */
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            font-size: 12px;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+        .nav-links a {
+            color: #000;
+            text-decoration: none;
+        }
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <h1>关系梳理 | 政策传导优化案例演绎</h1>
+            <span class="subtitle">以广州为例：如何实现精准传导</span>
+        </div>
+        <div class="back-nav">
+            <a href="../index.html">首页</a>
+            <span style="color: #666;">|</span>
+            <a href="analysis.html">← 政策分析</a>
+            <span style="color: #666;">|</span>
+            <a href="intro.html">← 知识图谱</a>
+            <span style="color: #666;">|</span>
+            <a href="tech.html">← 技术路线</a>
+        </div>
+    </div>
+
+    <div class="content">
+        <!-- 核心观点 -->
+        <div class="key-insights">
+            <h3>核心观点</h3>
+            <div class="insights-grid">
+                <div class="insight-item">
+                    <div class="insight-num">01</div>
+                    <div class="insight-text">问题诊断：传导链条长、<span class="highlight">量化指标缺失</span>、地方创新缺乏约束机制</div>
+                </div>
+                <div class="insight-item">
+                    <div class="insight-num">02</div>
+                    <div class="insight-text">优化路径：建立<span class="highlight">"预通报-对标-监测-反馈"</span>四步闭环传导体系</div>
+                </div>
+                <div class="insight-item">
+                    <div class="insight-num">03</div>
+                    <div class="insight-text">预期效果：传导时效提升<span class="highlight">50%</span>，政策空转率降低至<span class="highlight">10%</span>以下</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 案例背景 -->
+        <div class="case-section">
+            <h2 class="section-title"><span>01</span>案例背景：2026年政策传导的真实数据</h2>
+            <div class="scenario-card">
+                <div class="scenario-header">
+                    <span class="scenario-tag">信息来源</span>
+                    <span class="scenario-title">基于官方公开资料的政策传导案例分析</span>
+                </div>
+                <div class="scenario-content">
+                    <p><strong>政策背景：</strong>2026年政府工作报告明确房地产核心方向为<span class="highlight">"控增量、去库存、优供给"</span>，国务院副总理何立峰于<span class="highlight">3月24日</span>在住建部座谈会提出"推动房地产政策落实落地"的具体要求。<sup>[1]</sup></p>
+                    <br>
+                    <p><strong>广州响应：</strong><span class="highlight">4月30日</span>，广州市人民政府印发《关于进一步促进房地产市场平稳健康发展的实施意见》，涵盖公积金贷款额度提升、卖旧买新补贴、房票政策优化等<span class="highlight">8项措施</span>。<sup>[2]</sup><span class="highlight">5月12日</span>，广州市规划和自然资源局公布2026年建设用地供应计划，商品住宅用地仅<span class="highlight">216公顷</span>，同比减少<span class="highlight">58.06%</span>。<sup>[3]</sup></p>
+                    <br>
+                    <p><strong>数据来源：</strong></p>
+                    <ul style="font-size: 12px; line-height: 2; color: #666; margin-left: 20px;">
+                        <li>[1] <a href="https://www.sohu.com/a/993128563_124706" target="_blank" style="color: #0066cc;">新华社，2026年3月，《政府工作报告部署2026房地产政策方向》</a></li>
+                        <li>[2] <a href="https://www.163.com/dy/article/KSQ8J86A0552NW2D.html" target="_blank" style="color: #0066cc;">广州市人民政府官网，2026年4月30日，《关于进一步促进房地产市场平稳健康发展的实施意见》</a></li>
+                        <li>[3] <a href="https://www.sohu.com/a/1021359695_100266053" target="_blank" style="color: #0066cc;">搜狐焦点，2026年5月12日，《缩量、提质 一线城市2026年供地导向明确》</a></li>
+                        <li>[4] <a href="https://so.html5.qq.com/page/real/search_news?docid=70000021_79369f4015f80352" target="_blank" style="color: #0066cc;">广州住房公积金管理中心，2026年4月30日，《关于调整住房公积金贷款政策的通知》</a></li>
+                        <li>[5] <a href="https://so.html5.qq.com/page/real/search_news?docid=70000021_5816957270e38552" target="_blank" style="color: #0066cc;">中国房地产报，2026年1月2日，《广州市住建局局长蔡胜：2026楼市重点在"稳"！》</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 传导分析 -->
+        <div class="case-section">
+            <h2 class="section-title"><span>02</span>广州如何响应全国政策：传导关系对照</h2>
+
+            <div class="compare-section">
+                <div class="compare-header national">
+                    <span>全国政策方向</span>
+                    <span>广州响应措施</span>
+                </div>
+                <div class="compare-row">
+                    <div class="compare-left">
+                        <strong>去库存</strong><br>
+                        收购存量商品房用于保障性住房<br>
+                        <span style="font-size: 11px; color: #666;">来源：[1]</span>
+                    </div>
+                    <div class="compare-center">传导</div>
+                    <div class="compare-right">
+                        <strong>以购代建 2个存量项目</strong><br>
+                        广州收购存量商品房，转化为配售型保障房和保租房<br>
+                        <span style="font-size: 11px; color: #666;">来源：[5]</span>
+                    </div>
+                </div>
+                <div class="compare-row">
+                    <div class="compare-left">
+                        <strong>控增量</strong><br>
+                        科学安排土地供应，引导配置金融资源<br>
+                        <span style="font-size: 11px; color: #666;">来源：[1]</span>
+                    </div>
+                    <div class="compare-center">传导</div>
+                    <div class="compare-right">
+                        <strong>商品住宅用地减少 <span class="highlight">58%</span></strong><br>
+                        2026年仅<span class="highlight">216公顷</span>，同比2025年515公顷<br>
+                        <span style="font-size: 11px; color: #666;">来源：[3]</span>
+                    </div>
+                </div>
+                <div class="compare-row">
+                    <div class="compare-left">
+                        <strong>优供给</strong><br>
+                        有序推动"好房子"建设<br>
+                        <span style="font-size: 11px; color: #666;">来源：[1]</span>
+                    </div>
+                    <div class="compare-center">传导</div>
+                    <div class="compare-right">
+                        <strong>好房子建设 + 标准体系</strong><br>
+                        建立"好房子"标准，创建示范小区<br>
+                        <span style="font-size: 11px; color: #666;">来源：[5]</span>
+                    </div>
+                </div>
+                <div class="compare-row">
+                    <div class="compare-left">
+                        <strong>深化公积金改革</strong><br>
+                        优化住房公积金使用<br>
+                        <span style="font-size: 11px; color: #666;">来源：[1]</span>
+                    </div>
+                    <div class="compare-center">自行出台</div>
+                    <div class="compare-right">
+                        <strong>公积金额度提升</strong><br>
+                        单人<span class="highlight">100万</span>，两人<span class="highlight">200万</span>，育儿家庭可叠加<br>
+                        <span style="font-size: 11px; color: #666;">来源：[4]</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 优化建议 -->
+        <div class="case-section">
+            <h2 class="section-title"><span>03</span>优化建议：左右对照</h2>
+
+            <div class="compare-section">
+                <div class="compare-header problem">
+                    <span>现状问题</span>
+                    <span>优化建议</span>
+                </div>
+                <div class="compare-row">
+                    <div class="compare-left">
+                        <strong>传导链条长，时效滞后</strong><br>
+                        全国政策发布后，地方配套文件出台平均需要<span class="highlight">30天以上</span>，企业反映"等到配套出台，市场窗口期已过"
+                    </div>
+                    <div class="compare-center">→</div>
+                    <div class="compare-right">
+                        <strong>建立"政策预通报"机制</strong><br>
+                        国家政策制定初期提前通知地方参与研讨，成立"政策对接专班"，在正式发布前<span class="highlight">2周</span>收到草案，提前启动配套研究
+                    </div>
+                </div>
+                <div class="compare-row">
+                    <div class="compare-left">
+                        <strong>缺乏量化标准</strong><br>
+                        全国政策多为方向性表述，如"合理安排土地供应"缺乏具体数字，导致执行参差不齐
+                    </div>
+                    <div class="compare-center">→</div>
+                    <div class="compare-right">
+                        <strong>制定传导"对标清单"</strong><br>
+                        每项全国政策配套<span class="highlight">3-5个</span>量化指标，如"商品住宅用地减少<span class="highlight">58%</span>"，供地方对标执行，明确完成时限和考核标准
+                    </div>
+                </div>
+                <div class="compare-row">
+                    <div class="compare-left">
+                        <strong>地方创新缺乏约束</strong><br>
+                        地方创新政策（如房票跨区通用）可能引发公平性质疑，缺乏事前评估机制
+                    </div>
+                    <div class="compare-center">→</div>
+                    <div class="compare-right">
+                        <strong>建立政策兼容性评估</strong><br>
+                        地方创新政策出台前，从国家方向一致性、市场公平性、可执行性、风险可控性四维评估，超过<span class="highlight">80分</span>方可实施
+                    </div>
+                </div>
+                <div class="compare-row">
+                    <div class="compare-left">
+                        <strong>效果反馈滞后</strong><br>
+                        政策效果反馈不及时，难以动态调整，"政策-执行-反馈"闭环未形成
+                    </div>
+                    <div class="compare-center">→</div>
+                    <div class="compare-right">
+                        <strong>构建实时监测系统</strong><br>
+                        打通住建局、统计局、公积金中心数据壁垒，建立月度监测仪表盘，实现"政策-执行-反馈-优化"闭环
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 数据验证 -->
+        <div class="case-section">
+            <h2 class="section-title"><span>04</span>案例数据验证</h2>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>数据项</th>
+                        <th>数值</th>
+                        <th>信息来源</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>公积金贷款额度（单人）</td>
+                        <td class="after"><span class="highlight">100万元</span>（2026年4月30日起）</td>
+                        <td><a href="https://so.html5.qq.com/page/real/search_news?docid=70000021_79369f4015f80352" target="_blank" style="color: #0066cc;">广州住房公积金管理中心<sup>[4]</sup></a></td>
+                    </tr>
+                    <tr>
+                        <td>公积金贷款额度（两人）</td>
+                        <td class="after"><span class="highlight">200万元</span>（2026年4月30日起）</td>
+                        <td><a href="https://so.html5.qq.com/page/real/search_news?docid=70000021_79369f4015f80352" target="_blank" style="color: #0066cc;">广州住房公积金管理中心<sup>[4]</sup></a></td>
+                    </tr>
+                    <tr>
+                        <td>商品住宅用地（2026）</td>
+                        <td class="after"><span class="highlight">216公顷</span>，同比减少<span class="highlight">58.06%</span></td>
+                        <td><a href="https://www.sohu.com/a/1021359695_100266053" target="_blank" style="color: #0066cc;">广州市2026年建设用地供应计划<sup>[3]</sup></a></td>
+                    </tr>
+                    <tr>
+                        <td>卖旧买新补贴</td>
+                        <td class="after">贷款总额<span class="highlight">1%</span>，单套最高<span class="highlight">3万元</span></td>
+                        <td><a href="https://www.163.com/dy/article/KSQ8J86A0552NW2D.html" target="_blank" style="color: #0066cc;">广州市实施意见<sup>[2]</sup></a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="nav-links">
+            <a href="analysis.html">← 政策分析</a>
+        </div>
+    </div>
+</body>
+</html>
